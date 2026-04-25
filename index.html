@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Tracker</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden; /* Prevent child elements from bleeding out */
+        }
+        h1, h2 {
+            color: #0056b3;
+        }
+        .actions-cell {
+            white-space: nowrap;
+        }
+        .inline-edit-input {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .checklist-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+        }
+        .team-member-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+        .team-member-item input[type="number"] {
+            width: 50px;
+            padding: 2px;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        form {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        form input[type="text"], 
+        form input[type="number"], 
+        form input[type="date"], 
+        form select, 
+        form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: block;
+        }
+        form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        form button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        form button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            cursor: pointer;
+        }
+        th:hover {
+            background-color: #e0e0e0;
+        }
+        .sort-indicator {
+            margin-left: 5px;
+        }
+        .module-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .module-tab {
+            padding: 10px 20px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+        }
+        .module-tab.active {
+            background-color: #f9f9f9;
+            color: #0056b3;
+            border: 1px solid #ddd;
+            border-bottom: none;
+        }
+        .module-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 0 4px 4px 4px;
+            background-color: #f9f9f9;
+            margin-bottom: 30px;
+        }
+        .module-content.active {
+            display: block;
+        }
+        .update-selector {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .update-selector select {
+            font-size: 1.1em;
+            font-weight: bold;
+            border: 2px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Project Tracker</h1>
+
+        <section>
+            <div class="module-tabs">
+                <button class="module-tab active" onclick="switchModule('add')">Add New Project</button>
+                <button class="module-tab" onclick="switchModule('update')">Update Project</button>
+            </div>
+
+            <!-- Module 1: Add Project -->
+            <div id="addModule" class="module-content active">
+                <h2>Add New Project</h2>
+                <form id="addProjectForm">
+                    <div class="form-grid">
+                        <div>
+                            <label for="projectTitle">Project Title:</label>
+                            <input type="text" id="projectTitle" required>
+                        </div>
+                        <div>
+                            <label for="projectLocation">Location:</label>
+                            <select id="projectLocation" required>
+                                <option value="">Select Location</option>
+                                <optgroup label="Sumatra">
+                                    <option value="Aceh">Aceh</option>
+                                    <option value="North Sumatra">North Sumatra</option>
+                                    <option value="West Sumatra">West Sumatra</option>
+                                    <option value="Riau">Riau</option>
+                                    <option value="Riau Islands">Riau Islands</option>
+                                    <option value="Jambi">Jambi</option>
+                                    <option value="South Sumatra">South Sumatra</option>
+                                    <option value="Bengkulu">Bengkulu</option>
+                                    <option value="Lampung">Lampung</option>
+                                    <option value="Bangka Belitung Islands">Bangka Belitung Islands</option>
+                                </optgroup>
+                                <optgroup label="Java">
+                                    <option value="Jakarta">Jakarta</option>
+                                    <option value="Banten">Banten</option>
+                                    <option value="West Java">West Java</option>
+                                    <option value="Central Java">Central Java</option>
+                                    <option value="Special Region of Yogyakarta">Special Region of Yogyakarta</option>
+                                    <option value="East Java">East Java</option>
+                                </optgroup>
+                                <optgroup label="Bali & Nusa Tenggara">
+                                    <option value="Bali">Bali</option>
+                                    <option value="West Nusa Tenggara">West Nusa Tenggara</option>
+                                    <option value="East Nusa Tenggara">East Nusa Tenggara</option>
+                                </optgroup>
+                                <optgroup label="Kalimantan">
+                                    <option value="West Kalimantan">West Kalimantan</option>
+                                    <option value="Central Kalimantan">Central Kalimantan</option>
+                                    <option value="South Kalimantan">South Kalimantan</option>
+                                    <option value="East Kalimantan">East Kalimantan</option>
+                                    <option value="North Kalimantan">North Kalimantan</option>
+                                </optgroup>
+                                <optgroup label="Sulawesi">
+                                    <option value="North Sulawesi">North Sulawesi</option>
+                                    <option value="Gorontalo">Gorontalo</option>
+                                    <option value="Central Sulawesi">Central Sulawesi</option>
+                                    <option value="West Sulawesi">West Sulawesi</option>
+                                    <option value="South Sulawesi">South Sulawesi</option>
+                                    <option value="Southeast Sulawesi">Southeast Sulawesi</option>
+                                </optgroup>
+                                <optgroup label="Maluku">
+                                    <option value="Maluku">Maluku</option>
+                                    <option value="North Maluku">North Maluku</option>
+                                </optgroup>
+                                <optgroup label="Papua">
+                                    <option value="Papua">Papua</option>
+                                    <option value="West Papua">West Papua</option>
+                                    <option value="Central Papua">Central Papua</option>
+                                    <option value="South Papua">South Papua</option>
+                                    <option value="Papua Highlands">Papua Highlands</option>
+                                    <option value="Southwest Papua">Southwest Papua</option>
+                                </optgroup>
+                                <optgroup label="Others">
+                                    <option value="National Project">National Project</option>
+                                    <option value="International Project">International Project</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="projectClient">Client:</label>
+                            <input type="text" id="projectClient" required>
+                        </div>
+                        <div>
+                            <label for="projectType">Type:</label>
+                            <select id="projectType" required>
+                                <option value="">Select Type</option>
+                                <option value="Numerical Modelling">Numerical Modelling</option>
+                                <option value="Technical Recommendation">Technical Recommendation</option>
+                                <option value="Detailed Engineering and Design">Detailed Engineering and Design</option>
+                                <option value="Advisory Services">Advisory Services</option>
+                                <option value="Masterplan">Masterplan</option>
+                                <option value="Physical Modelling">Physical Modelling</option>
+                                <option value="Concession Study">Concession Study</option>
+                                <option value="Feasibilty Study">Feasibilty Study</option>
+                                <option value="Feasibility, Masterplan, and Investigative-Survey-and-Design Studies">Feasibility, Masterplan, and Investigative-Survey-and-Design Studies</option>
+                                <option value="Feasibility Study">Feasibility Study</option>
+                                <option value="Investigative-Survey-and-Design">Investigative-Survey-and-Design</option>
+                                <option value="Masterplan and Work-Authority-Area-and-Interest-Authority-Area">Masterplan and Work-Authority-Area-and-Interest-Authority-Area</option>
+                                <option value="Basic Engineering and Design">Basic Engineering and Design</option>
+                                <option value="Preliminary Feasibility Study">Preliminary Feasibility Study</option>
+                                <option value="Investigative-Survey-and-Design for Dredging">Investigative-Survey-and-Design for Dredging</option>
+                                <option value="Investigative-Survey-and-Design and Masterplan">Investigative-Survey-and-Design and Masterplan</option>
+                                <option value="Feasibility Study, Masterplan, Investigative-Survey-and-Design">Feasibility Study, Masterplan, Investigative-Survey-and-Design</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="projectProgress">Progress:</label>
+                            <select id="projectProgress" required>
+                                <option value="Not started">Not started</option>
+                                <option value="Ongoing">Ongoing</option>
+                                <option value="Completed">Completed</option>
+                                <option value="On hold">On hold</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="projectStartDate">Start Date:</label>
+                            <input type="date" id="projectStartDate" required>
+                        </div>
+                        <div>
+                            <label for="projectContractValue">Contract Value (IDR):</label>
+                            <input type="number" id="projectContractValue" required>
+                        </div>
+                        <div>
+                            <label for="projectPaymentPaid">Payment Paid (IDR):</label>
+                            <input type="number" id="projectPaymentPaid" required>
+                        </div>
+                        
+                        <div class="full-width">
+                            <label>PIC (Person in Charge):</label>
+                            <div id="projectPIC" class="checklist-group">
+                                <label><input type="checkbox" value="AMF"> AMF</label>
+                                <label><input type="checkbox" value="MDS"> MDS</label>
+                                <label><input type="checkbox" value="RS"> RS</label>
+                                <label><input type="checkbox" value="AdF"> AdF</label>
+                                <label><input type="checkbox" value="FPB"> FPB</label>
+                                <label><input type="checkbox" value="WH"> WH</label>
+                                <label><input type="checkbox" value="TRS"> TRS</label>
+                                <label><input type="checkbox" value="FR"> FR</label>
+                                <label><input type="checkbox" value="AnF"> AnF</label>
+                                <label><input type="checkbox" value="HW"> HW</label>
+                                <label><input type="checkbox" value="IFK"> IFK</label>
+                                <label><input type="checkbox" value="DF"> DF</label>
+                                <label><input type="checkbox" value="MP"> MP</label>
+                                <label><input type="checkbox" value="JBN"> JBN</label>
+                                <label><input type="checkbox" value="FM"> FM</label>
+                            </div>
+                        </div>
+
+                        <div class="full-width">
+                            <label>Team Members (% Proportional Fee):</label>
+                            <div id="projectTeamMembers" class="checklist-group">
+                                <div class="team-member-item"><label><input type="checkbox" value="AMF"> AMF</label><input type="number" placeholder="%" min="0" max="100"></div>
+                                <div class="team-member-item"><label><input type="checkbox" value="MDS"> MDS</label><input type="number" placeholder="%" min="0" max="100"></div>
+                                <div class="team-member-item"><label><input type="checkbox" value="RS"> RS</label><input type="number" placeholder="%" min="0" max="100"></div>
+                                <div class="team-member-item"><label><input type="checkbox" value="AdF"> AdF</label><input type="number" placeholder="%" min="0" max="100"></div>
+                                <div class="team-member-item"><label><input type="checkbox" value="FPB"> FPB</label><input type="number" placeholder="%" min="0" max="100"></div>
+                                <div class="team-member-item"><label><input type="checkbox" value="WH"> WH</label><input type="number" placeholder="%" min="0" max="100"></div>
+                                <div class="team-member-item"><label><input type="checkbox" value="TRS"> TRS</label><input type="number" placeholder="%" min="0" max="100"></div>
+                                <div class="team-member-item"><label><input type="checkbox" value="FR"> FR</label><input type="number" placeholder="%" min="0" max="100"></div>
+                                <div class="team-member-item"><label><input type="checkbox" value="AnF"> AnF</label><input type="number" placeholder="%" min="0" max="100"></div>
+                                <div class="team-member-item"><label><input type="checkbox" value="HW"> HW</label><input type="number" placeholder="%" min="0" max="100"></div>
+                                <div class="team-member-item"><label><input type="checkbox" value="IFK"> IFK</label><input type="number" placeholder="%" min="0" max="100"></div>
+                                <div class="team-member-item"><label><input type="checkbox" value="DF"> DF</label><input type="number" placeholder="%" min="0" max="100"></div>
+                                <div class="team-member-item"><label><input type="checkbox" value="MP"> MP</label><input type="number" placeholder="%" min="0" max="100"></div>
+                                <div class="team-member-item"><label><input type="checkbox" value="JBN"> JBN</label><input type="number" placeholder="%" min="0" max="100"></div>
+                                <div class="team-member-item"><label><input type="checkbox" value="FM"> FM</label><input type="number" placeholder="%" min="0" max="100"></div>
+                            </div>
+                        </div>
+
+                        <div class="full-width">
+                            <label for="projectNotes">Notes:</label>
+                            <textarea id="projectNotes" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div class="full-width">
+                            <button type="submit">Add Project</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Module 2: Update Project -->
+            <div id="updateModule" class="module-content">
+                <h2>Update Project</h2>
+                <div class="update-selector">
+                    <label for="updateProjectSelect">Select Project to Update:</label>
+                    <select id="updateProjectSelect" onchange="loadProjectDataForUpdate()">
+                        <option value="">-- Choose a Project --</option>
+                    </select>
+                </div>
+
+                <form id="updateProjectForm" style="display: none;">
+                    <input type="hidden" id="updateId">
+                    <div class="form-grid">
+                        <div>
+                            <label for="updateTitle">Project Title:</label>
+                            <input type="text" id="updateTitle" required>
+                        </div>
+                        <div>
+                            <label for="updateLocation">Location:</label>
+                            <select id="updateLocation" required>
+                                <!-- Will be populated from LOCATION_LIST in script -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="updateClient">Client:</label>
+                            <input type="text" id="updateClient" required>
+                        </div>
+                        <div>
+                            <label for="updateType">Type:</label>
+                            <select id="updateType" required>
+                                <!-- Will be populated from PROJECT_TYPES in script -->
+                            </select>
+                        </div>
+                        <div>
+                            <label for="updateProgress">Progress:</label>
+                            <select id="updateProgress" required>
+                                <option value="Not started">Not started</option>
+                                <option value="Ongoing">Ongoing</option>
+                                <option value="Completed">Completed</option>
+                                <option value="On hold">On hold</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="updateStartDate">Start Date:</label>
+                            <input type="date" id="updateStartDate" required>
+                        </div>
+                        <div>
+                            <label for="updateContractValue">Contract Value (IDR):</label>
+                            <input type="number" id="updateContractValue" required>
+                        </div>
+                        <div>
+                            <label for="updatePaymentPaid">Payment Paid (IDR):</label>
+                            <input type="number" id="updatePaymentPaid" required>
+                        </div>
+                        
+                        <div class="full-width">
+                            <label>PIC (Person in Charge):</label>
+                            <div id="updatePIC" class="checklist-group">
+                                <!-- Will be populated in script -->
+                            </div>
+                        </div>
+
+                        <div class="full-width">
+                            <label>Team Members (% Proportional Fee):</label>
+                            <div id="updateTeamMembers" class="checklist-group">
+                                <!-- Will be populated in script -->
+                            </div>
+                        </div>
+
+                        <div class="full-width">
+                            <label for="updateNotes">Notes:</label>
+                            <textarea id="updateNotes" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
+                        </div>
+                        
+                        <div class="full-width">
+                            <button type="submit" style="background-color: #28a745;">Save Changes</button>
+                            <button type="button" onclick="cancelUpdate()" style="background-color: #6c757d; margin-left: 10px;">Cancel</button>
+                            <button type="button" id="deleteProjectBtn" onclick="deleteCurrentProject()" style="background-color: #dc3545; margin-left: 10px; display: none;">Delete Project</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <section>
+            <h2>All Projects</h2>
+            <div class="table-responsive">
+                <table id="projectsTable" border="1" style="width:100%; border-collapse: collapse; font-size: 14px;">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th data-sort-by="title">Title <span class="sort-indicator"></span></th>
+                            <th data-sort-by="location">Location <span class="sort-indicator"></span></th>
+                            <th data-sort-by="client">Client <span class="sort-indicator"></span></th>
+                            <th data-sort-by="type">Type <span class="sort-indicator"></span></th>
+                            <th data-sort-by="progress">Progress <span class="sort-indicator"></span></th>
+                            <th data-sort-by="start_date">Start Date <span class="sort-indicator"></span></th>
+                            <th data-sort-by="contract_value">Contract Value <span class="sort-indicator"></span></th>
+                            <th>Payment Paid (%)</th>
+                            <th>PIC</th>
+                            <th>Team Members</th>
+                            <th>Notes</th>
+                            <th data-sort-by="modified_at">Last Modified <span class="sort-indicator"></span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Projects will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Password Protection
+        (function() {
+            const TEAM_PASSWORD = "yoloswagslebew";
+            const savedAuth = localStorage.getItem('team_auth');
+            
+            if (savedAuth !== TEAM_PASSWORD) {
+                const pass = prompt("Please enter the team access password:");
+                if (pass === TEAM_PASSWORD) {
+                    localStorage.setItem('team_auth', pass);
+                } else {
+                    alert("Access Denied");
+                    document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column;font-family:sans-serif;'><h1>Unauthorized Access</h1><p>Please refresh and enter the correct password.</p></div>";
+                    window.stop();
+                    throw new Error("Unauthorized");
+                }
+            }
+        })();
+
+        const API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3001' 
+            : window.location.origin;
+        let allProjects = []; // To store all fetched projects
+        let currentSortColumn = 'modified_at';
+        let currentSortDirection = 'desc'; // Default sort by modified_at descending
+
+        const PIC_LIST = ['AMF', 'MDS', 'RS', 'AdF', 'FPB', 'WH', 'TRS', 'FR', 'AnF', 'HW', 'IFK', 'DF', 'MP', 'JBN', 'FM'];
+        const LOCATION_LIST = {
+            "Sumatra": ["Aceh", "North Sumatra", "West Sumatra", "Riau", "Riau Islands", "Jambi", "South Sumatra", "Bengkulu", "Lampung", "Bangka Belitung Islands"],
+            "Java": ["Jakarta", "Banten", "West Java", "Central Java", "Special Region of Yogyakarta", "East Java"],
+            "Bali & Nusa Tenggara": ["Bali", "West Nusa Tenggara", "East Nusa Tenggara"],
+            "Kalimantan": ["West Kalimantan", "Central Kalimantan", "South Kalimantan", "East Kalimantan", "North Kalimantan"],
+            "Sulawesi": ["North Sulawesi", "Gorontalo", "Central Sulawesi", "West Sulawesi", "South Sulawesi", "Southeast Sulawesi"],
+            "Maluku": ["Maluku", "North Maluku"],
+            "Papua": ["Papua", "West Papua", "Central Papua", "South Papua", "Papua Highlands", "Southwest Papua"],
+            "Others": ["National Project", "International Project"]
+        };
+        const PROJECT_TYPES = [
+            "Numerical Modelling", "Technical Recommendation", "Detailed Engineering and Design",
+            "Advisory Services", "Masterplan", "Physical Modelling", "Concession Study",
+            "Feasibilty Study", "Feasibility, Masterplan, and Investigative-Survey-and-Design Studies",
+            "Feasibility Study", "Investigative-Survey-and-Design",
+            "Masterplan and Work-Authority-Area-and-Interest-Authority-Area",
+            "Basic Engineering and Design", "Preliminary Feasibility Study",
+            "Investigative-Survey-and-Design for Dredging",
+            "Investigative-Survey-and-Design and Masterplan",
+            "Feasibility Study, Masterplan, Investigative-Survey-and-Design"
+        ];
+        const PROGRESS_OPTIONS = ["Not started", "Ongoing", "Completed", "On hold"];
+
+        // Helper to format currency
+        function formatIDR(value) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
+        }
+
+        // Helper to format PIC/Team Members for display
+        function formatPICDisplay(pic) {
+            if (!pic) return '';
+            return Array.isArray(pic) ? pic.join(', ') : pic;
+        }
+
+        function formatTeamDisplay(team) {
+            if (!team) return '';
+            const members = typeof team === 'string' ? JSON.parse(team) : team;
+            return Object.entries(members).map(([name, fee]) => `${name} (${fee}%)`).join(', ');
+        }
+
+        // Function to render projects table
+        function renderProjectsTable(projectsToRender) {
+            const projectsTableBody = document.querySelector('#projectsTable tbody');
+            projectsTableBody.innerHTML = ''; // Clear existing table rows
+
+            projectsToRender.forEach((project, index) => {
+                const tableRow = document.createElement('tr');
+                
+                const contractVal = project.contract_value || 0;
+                const paidVal = project.payment_paid || 0;
+                const percent = contractVal > 0 ? ((paidVal / contractVal) * 100).toFixed(1) : 0;
+                const modifiedAt = project.modified_at || project.created_at;
+
+                tableRow.style.cursor = 'pointer';
+                tableRow.onclick = () => editProject(project.id);
+                tableRow.title = "Click to update this project";
+
+                tableRow.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${project.title || ''}</td>
+                    <td>${project.location || ''}</td>
+                    <td>${project.client || ''}</td>
+                    <td>${project.type || ''}</td>
+                    <td>${project.progress || ''}</td>
+                    <td>${project.start_date ? new Date(project.start_date).toLocaleDateString() : ''}</td>
+                    <td>${formatIDR(contractVal)}</td>
+                    <td>${formatIDR(paidVal)} (${percent}%)</td>
+                    <td>${formatPICDisplay(project.pic)}</td>
+                    <td>${formatTeamDisplay(project.team_members)}</td>
+                    <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${project.notes || ''}">${project.notes || ''}</td>
+                    <td>${modifiedAt ? new Date(modifiedAt).toLocaleString() : '-'}</td>
+                `;
+                projectsTableBody.appendChild(tableRow);
+            });
+
+
+            // Update sort indicators
+            document.querySelectorAll('#projectsTable th').forEach(header => {
+                const sortColumn = header.getAttribute('data-sort-by');
+                const indicator = header.querySelector('.sort-indicator');
+                if (indicator) {
+                    indicator.textContent = ''; // Clear all indicators
+                    if (sortColumn === currentSortColumn) {
+                        indicator.textContent = currentSortDirection === 'asc' ? '▲' : '▼';
+                    }
+                }
+            });
+        }
+
+        // Function to fetch projects and initialize rendering/sorting
+        function switchModule(moduleName) {
+            document.querySelectorAll('.module-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.module-content').forEach(content => content.classList.remove('active'));
+            
+            if (moduleName === 'add') {
+                document.querySelector('.module-tab:nth-child(1)').classList.add('active');
+                document.getElementById('addModule').classList.add('active');
+            } else {
+                document.querySelector('.module-tab:nth-child(2)').classList.add('active');
+                document.getElementById('updateModule').classList.add('active');
+                populateUpdateDropdown();
+            }
+        }
+
+        function populateUpdateDropdown() {
+            const select = document.getElementById('updateProjectSelect');
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">-- Choose a Project --</option>';
+            
+            allProjects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.id;
+                option.textContent = project.title;
+                select.appendChild(option);
+            });
+            select.value = currentValue;
+        }
+
+        function loadProjectDataForUpdate() {
+            const projectId = document.getElementById('updateProjectSelect').value;
+            const form = document.getElementById('updateProjectForm');
+            
+            if (!projectId) {
+                form.style.display = 'none';
+                return;
+            }
+
+            const project = allProjects.find(p => p.id == projectId);
+            if (!project) return;
+
+            form.style.display = 'block';
+            document.getElementById('updateId').value = project.id;
+            document.getElementById('updateTitle').value = project.title || '';
+            document.getElementById('updateClient').value = project.client || '';
+            document.getElementById('updateProgress').value = project.progress || 'Not started';
+            document.getElementById('updateStartDate').value = project.start_date ? project.start_date.split('T')[0] : '';
+            document.getElementById('updateContractValue').value = project.contract_value || 0;
+            document.getElementById('updatePaymentPaid').value = project.payment_paid || 0;
+            document.getElementById('updateNotes').value = project.notes || '';
+            document.getElementById('deleteProjectBtn').style.display = 'inline-block';
+
+            // Populate Location Select
+            const locSelect = document.getElementById('updateLocation');
+            locSelect.innerHTML = '<option value="">Select Location</option>';
+            Object.entries(LOCATION_LIST).forEach(([region, locs]) => {
+                const group = document.createElement('optgroup');
+                group.label = region;
+                locs.forEach(loc => {
+                    const opt = document.createElement('option');
+                    opt.value = loc;
+                    opt.textContent = loc;
+                    if (project.location === loc) opt.selected = true;
+                    group.appendChild(opt);
+                });
+                locSelect.appendChild(group);
+            });
+
+            // Populate Type Select
+            const typeSelect = document.getElementById('updateType');
+            typeSelect.innerHTML = '<option value="">Select Type</option>';
+            PROJECT_TYPES.forEach(type => {
+                const opt = document.createElement('option');
+                opt.value = type;
+                opt.textContent = type;
+                if (project.type === type) opt.selected = true;
+                typeSelect.appendChild(opt);
+            });
+
+            // Populate PIC Checkboxes
+            const picGroup = document.getElementById('updatePIC');
+            picGroup.innerHTML = '';
+            const projectPICs = project.pic || [];
+            PIC_LIST.forEach(pic => {
+                const label = document.createElement('label');
+                const checked = projectPICs.includes(pic) ? 'checked' : '';
+                label.innerHTML = `<input type="checkbox" value="${pic}" ${checked}> ${pic}`;
+                picGroup.appendChild(label);
+            });
+
+            // Populate Team Members
+            const teamGroup = document.getElementById('updateTeamMembers');
+            teamGroup.innerHTML = '';
+            const projectTeam = project.team_members || {};
+            PIC_LIST.forEach(member => {
+                const div = document.createElement('div');
+                div.className = 'team-member-item';
+                const isChecked = projectTeam.hasOwnProperty(member);
+                const fee = isChecked ? projectTeam[member] : '';
+                div.innerHTML = `
+                    <label><input type="checkbox" value="${member}" ${isChecked ? 'checked' : ''}> ${member}</label>
+                    <input type="number" placeholder="%" min="0" max="100" value="${fee}">
+                `;
+                teamGroup.appendChild(div);
+            });
+        }
+
+        function cancelUpdate() {
+            document.getElementById('updateProjectSelect').value = '';
+            document.getElementById('updateProjectForm').style.display = 'none';
+            document.getElementById('deleteProjectBtn').style.display = 'none';
+        }
+
+        // Handle Update Submit
+        document.getElementById('updateProjectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('updateId').value;
+            
+            // Collect PICs
+            const pic = Array.from(document.querySelectorAll('#updatePIC input:checked')).map(cb => cb.value);
+            
+            // Collect Team Members
+            const team_members = {};
+            document.querySelectorAll('#updateTeamMembers .team-member-item').forEach(item => {
+                const cb = item.querySelector('input[type="checkbox"]');
+                const feeInput = item.querySelector('input[type="number"]');
+                if (cb.checked) {
+                    team_members[cb.value] = parseInt(feeInput.value) || 0;
+                }
+            });
+
+            const projectData = {
+                title: document.getElementById('updateTitle').value,
+                location: document.getElementById('updateLocation').value,
+                client: document.getElementById('updateClient').value,
+                type: document.getElementById('updateType').value,
+                progress: document.getElementById('updateProgress').value,
+                start_date: document.getElementById('updateStartDate').value,
+                contract_value: parseInt(document.getElementById('updateContractValue').value) || 0,
+                payment_paid: parseInt(document.getElementById('updatePaymentPaid').value) || 0,
+                pic,
+                team_members,
+                notes: document.getElementById('updateNotes').value
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/projects/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(projectData)
+                });
+                if (response.ok) {
+                    alert('Project updated successfully!');
+                    cancelUpdate();
+                    fetchProjects(); // Refresh table
+                }
+            } catch (error) {
+                console.error('Error updating project:', error);
+            }
+        });
+
+        async function fetchProjects() {
+            const response = await fetch(`${API_URL}/projects`);
+            allProjects = await response.json(); // Store fetched projects
+
+            // Apply initial sort
+            sortAndRenderProjects(currentSortColumn, currentSortDirection);
+        }
+
+        // Function to sort projects and re-render the table
+        function sortAndRenderProjects(column, direction) {
+            currentSortColumn = column;
+            currentSortDirection = direction;
+
+            const sortedProjects = [...allProjects].sort((a, b) => {
+                let valA = a[column];
+                let valB = b[column];
+
+                // Handle date sorting
+                if (column === 'modified_at' || column === 'start_date') {
+                    valA = valA ? new Date(valA).getTime() : 0;
+                    valB = valB ? new Date(valB).getTime() : 0;
+                } else if (typeof valA === 'string') {
+                    valA = valA.toLowerCase();
+                    valB = valB.toLowerCase();
+                }
+
+                if (valA < valB) {
+                    return direction === 'asc' ? -1 : 1;
+                }
+                if (valA > valB) {
+                    return direction === 'asc' ? 1 : -1;
+                }
+                return 0;
+            });
+            renderProjectsTable(sortedProjects);
+        }
+
+        // Event listeners for table headers for sorting
+        document.querySelectorAll('#projectsTable th').forEach(header => {
+            header.addEventListener('click', () => {
+                const column = header.getAttribute('data-sort-by');
+                if (column) {
+                    const newDirection = (column === currentSortColumn && currentSortDirection === 'asc') ? 'desc' : 'asc';
+                    sortAndRenderProjects(column, newDirection);
+                }
+            });
+        });
+
+        // Function to enter editing mode for a project
+        function editProject(id) {
+            switchModule('update');
+            document.getElementById('updateProjectSelect').value = id;
+            loadProjectDataForUpdate();
+            // Scroll to top to see the update form
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Function to add a new project
+        document.getElementById('addProjectForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            // Collect PICs
+            const pic = Array.from(document.querySelectorAll('#projectPIC input:checked')).map(cb => cb.value);
+            
+            // Collect Team Members
+            const team_members = {};
+            document.querySelectorAll('#projectTeamMembers .team-member-item').forEach(item => {
+                const cb = item.querySelector('input[type="checkbox"]');
+                const feeInput = item.querySelector('input[type="number"]');
+                if (cb.checked) {
+                    team_members[cb.value] = parseInt(feeInput.value) || 0;
+                }
+            });
+
+            const projectData = {
+                title: document.getElementById('projectTitle').value,
+                location: document.getElementById('projectLocation').value,
+                client: document.getElementById('projectClient').value,
+                type: document.getElementById('projectType').value,
+                progress: document.getElementById('projectProgress').value,
+                start_date: document.getElementById('projectStartDate').value,
+                contract_value: parseInt(document.getElementById('projectContractValue').value) || 0,
+                payment_paid: parseInt(document.getElementById('projectPaymentPaid').value) || 0,
+                pic,
+                team_members,
+                notes: document.getElementById('projectNotes').value
+            };
+
+            await fetch(`${API_URL}/projects`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(projectData)
+            });
+
+            event.target.reset();
+            fetchProjects(); // Refresh the list
+        });
+
+
+        // Function to delete the currently selected project in the update module
+        async function deleteCurrentProject() {
+            const id = document.getElementById('updateId').value;
+            if (!id) return;
+            
+            if (confirm('Are you sure you want to delete this project?')) {
+                await fetch(`${API_URL}/projects/${id}`, {
+                    method: 'DELETE',
+                });
+                cancelUpdate();
+                fetchProjects(); // Refresh the list
+            }
+        }
+
+        // Initial fetch of projects when the page loads
+        fetchProjects();
+    </script>
+</body>
+</html>
