@@ -731,7 +731,7 @@
             };
 
             try {
-                const response = await fetch(`${API_URL}/projects/${id}`, {
+                const response = await fetch(`${https://sir-project-tracker.onrender.com/projects}/projects/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(projectData)
@@ -747,7 +747,7 @@
         });
 
         async function fetchProjects() {
-            const response = await fetch(`${API_URL}/projects`);
+            const response = await fetch(`${https://sir-project-tracker.onrender.com/projects}/projects`);
             allProjects = await response.json(); // Store fetched projects
 
             // Apply initial sort
@@ -834,7 +834,7 @@
                 notes: document.getElementById('projectNotes').value
             };
 
-            await fetch(`${API_URL}/projects`, {
+            await fetch(`${https://sir-project-tracker.onrender.com/projects}/projects`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(projectData)
@@ -851,7 +851,7 @@
             if (!id) return;
             
             if (confirm('Are you sure you want to delete this project?')) {
-                await fetch(`${API_URL}/projects/${id}`, {
+                await fetch(`${https://sir-project-tracker.onrender.com/projects}/projects/${id}`, {
                     method: 'DELETE',
                 });
                 cancelUpdate();
