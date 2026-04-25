@@ -447,7 +447,7 @@
                     <thead>
                         <tr>
                             <th>No.</th>
-                            <th data-sort-by="title">Title <span class="sort-indicator"></span></th>
+                            <th data-sort-by="title" style="min-width: 150px;">Title <span class="sort-indicator"></span></th>
                             <th data-sort-by="location">Location <span class="sort-indicator"></span></th>
                             <th data-sort-by="client">Client <span class="sort-indicator"></span></th>
                             <th data-sort-by="type">Type <span class="sort-indicator"></span></th>
@@ -457,7 +457,7 @@
                             <th>Payment Paid (%)</th>
                             <th>PIC</th>
                             <th>Team Members</th>
-                            <th>Notes</th>
+                            <th style="min-width: 150px;">Notes</th>
                             <th data-sort-by="modified_at">Last Modified <span class="sort-indicator"></span></th>
                         </tr>
                     </thead>
@@ -555,7 +555,7 @@
 
                 tableRow.innerHTML = `
                     <td>${index + 1}</td>
-                    <td>${project.title || ''}</td>
+                    <td style="min-width: 200px; word-wrap: break-word; white-space: normal;">${project.title || ''}</td>
                     <td>${project.location || ''}</td>
                     <td>${project.client || ''}</td>
                     <td>${project.type || ''}</td>
@@ -565,7 +565,7 @@
                     <td>${formatIDR(paidVal)} (${percent}%)</td>
                     <td>${formatPICDisplay(project.pic)}</td>
                     <td>${formatTeamDisplay(project.team_members)}</td>
-                    <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${project.notes || ''}">${project.notes || ''}</td>
+                    <td style="min-width: 200px; word-wrap: break-word; white-space: normal;" title="${project.notes || ''}">${project.notes || ''}</td>
                     <td>${modifiedAt ? new Date(modifiedAt).toLocaleString() : '-'}</td>
                 `;
                 projectsTableBody.appendChild(tableRow);
