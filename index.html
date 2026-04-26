@@ -189,12 +189,12 @@
                 <form id="addProjectForm">
                     <div class="form-grid">
                         <div>
-                            <label for="projectTitle">Project Title:</label>
-                            <input type="text" id="projectTitle" required>
+                            <label for="addTitle">Project Title (as per Contract):</label>
+                            <input type="text" id="addTitle" required>
                         </div>
                         <div>
-                            <label for="projectLocation">Location:</label>
-                            <select id="projectLocation" required>
+                            <label for="addLocation">Location:</label>
+                            <select id="addLocation" required onchange="handleLocationChange('add')">
                                 <option value="">Select Location</option>
                                 <optgroup label="Sumatra">
                                     <option value="Aceh">Aceh</option>
@@ -254,13 +254,17 @@
                                 </optgroup>
                             </select>
                         </div>
-                        <div>
-                            <label for="projectClient">Client:</label>
-                            <input type="text" id="projectClient" required>
+                        <div id="addCountryContainer" style="display: none;">
+                            <label for="addCountry">Country:</label>
+                            <input type="text" id="addCountry" placeholder="e.g. Singapore">
                         </div>
                         <div>
-                            <label for="projectType">Type:</label>
-                            <select id="projectType" required>
+                            <label for="addClient">Client:</label>
+                            <input type="text" id="addClient" required>
+                        </div>
+                        <div>
+                            <label for="addType">Type:</label>
+                            <select id="addType" required>
                                 <option value="">Select Type</option>
                                 <option value="Numerical Modelling">Numerical Modelling</option>
                                 <option value="Technical Recommendation">Technical Recommendation</option>
@@ -282,8 +286,8 @@
                             </select>
                         </div>
                         <div>
-                            <label for="projectProgress">Progress:</label>
-                            <select id="projectProgress" required>
+                            <label for="addProgress">Progress:</label>
+                            <select id="addProgress" required>
                                 <option value="Not started">Not started</option>
                                 <option value="Ongoing">Ongoing</option>
                                 <option value="Completed">Completed</option>
@@ -291,21 +295,21 @@
                             </select>
                         </div>
                         <div>
-                            <label for="projectStartDate">Start Date:</label>
-                            <input type="date" id="projectStartDate" required>
+                            <label for="addStartDate">Start Date:</label>
+                            <input type="date" id="addStartDate" required>
                         </div>
                         <div>
-                            <label for="projectContractValue">Contract Value (IDR):</label>
-                            <input type="number" id="projectContractValue" required>
+                            <label for="addContractValue">Contract Value:</label>
+                            <input type="number" id="addContractValue" required>
                         </div>
                         <div>
-                            <label for="projectPaymentPaid">Payment Paid (IDR):</label>
-                            <input type="number" id="projectPaymentPaid" required>
+                            <label for="addPaymentPaid">Payment Paid:</label>
+                            <input type="number" id="addPaymentPaid" required>
                         </div>
                         
                         <div class="full-width">
                             <label>PIC (Person in Charge):</label>
-                            <div id="projectPIC" class="checklist-group">
+                            <div id="addPIC" class="checklist-group">
                                 <label><input type="checkbox" value="AMF"> AMF</label>
                                 <label><input type="checkbox" value="MDS"> MDS</label>
                                 <label><input type="checkbox" value="RS"> RS</label>
@@ -325,35 +329,18 @@
                         </div>
 
                         <div class="full-width">
-                            <label>Team Members (% Proportional Fee):</label>
-                            <div id="projectTeamMembers" class="checklist-group">
-                                <div class="team-member-item"><label><input type="checkbox" value="AMF"> AMF</label><input type="number" placeholder="%" min="0" max="100"></div>
-                                <div class="team-member-item"><label><input type="checkbox" value="MDS"> MDS</label><input type="number" placeholder="%" min="0" max="100"></div>
-                                <div class="team-member-item"><label><input type="checkbox" value="RS"> RS</label><input type="number" placeholder="%" min="0" max="100"></div>
-                                <div class="team-member-item"><label><input type="checkbox" value="AdF"> AdF</label><input type="number" placeholder="%" min="0" max="100"></div>
-                                <div class="team-member-item"><label><input type="checkbox" value="FPB"> FPB</label><input type="number" placeholder="%" min="0" max="100"></div>
-                                <div class="team-member-item"><label><input type="checkbox" value="WH"> WH</label><input type="number" placeholder="%" min="0" max="100"></div>
-                                <div class="team-member-item"><label><input type="checkbox" value="TRS"> TRS</label><input type="number" placeholder="%" min="0" max="100"></div>
-                                <div class="team-member-item"><label><input type="checkbox" value="FR"> FR</label><input type="number" placeholder="%" min="0" max="100"></div>
-                                <div class="team-member-item"><label><input type="checkbox" value="AnF"> AnF</label><input type="number" placeholder="%" min="0" max="100"></div>
-                                <div class="team-member-item"><label><input type="checkbox" value="HW"> HW</label><input type="number" placeholder="%" min="0" max="100"></div>
-                                <div class="team-member-item"><label><input type="checkbox" value="IFK"> IFK</label><input type="number" placeholder="%" min="0" max="100"></div>
-                                <div class="team-member-item"><label><input type="checkbox" value="DF"> DF</label><input type="number" placeholder="%" min="0" max="100"></div>
-                                <div class="team-member-item"><label><input type="checkbox" value="MP"> MP</label><input type="number" placeholder="%" min="0" max="100"></div>
-                                <div class="team-member-item"><label><input type="checkbox" value="JBN"> JBN</label><input type="number" placeholder="%" min="0" max="100"></div>
-                                <div class="team-member-item"><label><input type="checkbox" value="FM"> FM</label><input type="number" placeholder="%" min="0" max="100"></div>
+                            <label>Team Members (Percentage):</label>
+                            <div id="addTeamMembers" class="checklist-group">
+                                <!-- Will be populated in script -->
                             </div>
                         </div>
 
                         <div class="full-width">
-                            <label for="projectNotes">Notes:</label>
-                            <textarea id="projectNotes" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
-                        </div>
-                        
-                        <div class="full-width">
-                            <button type="submit">Add Project</button>
+                            <label for="addNotes">Notes:</label>
+                            <textarea id="addNotes"></textarea>
                         </div>
                     </div>
+                    <button type="submit">Add Project</button>
                 </form>
             </div>
 
@@ -371,14 +358,18 @@
                     <input type="hidden" id="updateId">
                     <div class="form-grid">
                         <div>
-                            <label for="updateTitle">Project Title:</label>
+                            <label for="updateTitle">Project Title (as per Contract):</label>
                             <input type="text" id="updateTitle" required>
                         </div>
                         <div>
                             <label for="updateLocation">Location:</label>
-                            <select id="updateLocation" required>
+                            <select id="updateLocation" required onchange="handleLocationChange('update')">
                                 <!-- Will be populated from LOCATION_LIST in script -->
                             </select>
+                        </div>
+                        <div id="updateCountryContainer" style="display: none;">
+                            <label for="updateCountry">Country:</label>
+                            <input type="text" id="updateCountry" placeholder="e.g. Singapore">
                         </div>
                         <div>
                             <label for="updateClient">Client:</label>
@@ -404,11 +395,11 @@
                             <input type="date" id="updateStartDate" required>
                         </div>
                         <div>
-                            <label for="updateContractValue">Contract Value (IDR):</label>
+                            <label for="updateContractValue">Contract Value:</label>
                             <input type="number" id="updateContractValue" required>
                         </div>
                         <div>
-                            <label for="updatePaymentPaid">Payment Paid (IDR):</label>
+                            <label for="updatePaymentPaid">Payment Paid:</label>
                             <input type="number" id="updatePaymentPaid" required>
                         </div>
                         
@@ -459,6 +450,7 @@
                             <th>Team Members</th>
                             <th style="min-width: 150px;">Notes</th>
                             <th data-sort-by="modified_at">Last Modified <span class="sort-indicator"></span></th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -472,7 +464,7 @@
     <script>
         // Password Protection
         (function() {
-            const TEAM_PASSWORD = "yoloswag";
+            const TEAM_PASSWORD = "Sangkuriang45C";
             const savedAuth = localStorage.getItem('team_auth');
             
             if (savedAuth !== TEAM_PASSWORD) {
@@ -519,9 +511,9 @@
         ];
         const PROGRESS_OPTIONS = ["Not started", "Ongoing", "Completed", "On hold"];
 
-        // Helper to format currency
-        function formatIDR(value) {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
+        // Helper to format currency (Updated: No currency prefix)
+        function formatNumber(value) {
+            return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(value);
         }
 
         // Helper to format PIC/Team Members for display
@@ -534,6 +526,39 @@
             if (!team) return '';
             const members = typeof team === 'string' ? JSON.parse(team) : team;
             return Object.entries(members).map(([name, fee]) => `${name} (${fee}%)`).join(', ');
+        }
+
+        // Handle Location change for International Project country input
+        function handleLocationChange(prefix) {
+            const locSelect = document.getElementById(`${prefix}Location`);
+            const countryContainer = document.getElementById(`${prefix}CountryContainer`);
+            if (locSelect.value === 'International Project') {
+                countryContainer.style.display = 'block';
+            } else {
+                countryContainer.style.display = 'none';
+                document.getElementById(`${prefix}Country`).value = '';
+            }
+        }
+
+        // Handle PIC checkbox mutual exclusivity
+        function handlePICSelection(containerId) {
+            const container = document.getElementById(containerId);
+            const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    const checkedOne = Array.from(checkboxes).find(c => c.checked);
+                    checkboxes.forEach(c => {
+                        if (checkedOne && c !== checkedOne) {
+                            c.disabled = true;
+                            c.parentElement.style.opacity = '0.5';
+                        } else {
+                            c.disabled = false;
+                            c.parentElement.style.opacity = '1';
+                        }
+                    });
+                });
+            });
         }
 
         // Function to render projects table
@@ -549,6 +574,25 @@
                 const percent = contractVal > 0 ? ((paidVal / contractVal) * 100).toFixed(1) : 0;
                 const modifiedAt = project.modified_at || project.created_at;
 
+                // Calculate Status
+                let statusText = "";
+                let statusColor = "";
+                const today = new Date();
+                const lastModDate = new Date(modifiedAt);
+                const diffTime = Math.abs(today - lastModDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (project.progress === 'Completed') {
+                    statusText = "Completed";
+                    statusColor = "#28a745"; // Green
+                } else if (diffDays < 7) {
+                    statusText = "Up to date";
+                    statusColor = "#007bff"; // Blue
+                } else {
+                    statusText = "Need update";
+                    statusColor = "#dc3545"; // Red
+                }
+
                 tableRow.style.cursor = 'pointer';
                 tableRow.onclick = () => editProject(project.id);
                 tableRow.title = "Click to update this project";
@@ -561,12 +605,13 @@
                     <td>${project.type || ''}</td>
                     <td>${project.progress || ''}</td>
                     <td>${project.start_date ? new Date(project.start_date).toLocaleDateString() : ''}</td>
-                    <td>${formatIDR(contractVal)}</td>
-                    <td>${formatIDR(paidVal)} (${percent}%)</td>
+                    <td>${formatNumber(contractVal)}</td>
+                    <td>${formatNumber(paidVal)} (${percent}%)</td>
                     <td>${formatPICDisplay(project.pic)}</td>
                     <td>${formatTeamDisplay(project.team_members)}</td>
                     <td style="min-width: 200px; word-wrap: break-word; white-space: normal;" title="${project.notes || ''}">${project.notes || ''}</td>
                     <td>${modifiedAt ? new Date(modifiedAt).toLocaleString() : '-'}</td>
+                    <td style="font-weight: bold; color: ${statusColor};">${statusText}</td>
                 `;
                 projectsTableBody.appendChild(tableRow);
             });
@@ -640,6 +685,14 @@
             // Populate Location Select
             const locSelect = document.getElementById('updateLocation');
             locSelect.innerHTML = '<option value="">Select Location</option>';
+            let mainLocation = project.location || '';
+            let countryValue = '';
+            
+            if (mainLocation.startsWith('International Project (')) {
+                countryValue = mainLocation.match(/\(([^)]+)\)/)[1];
+                mainLocation = 'International Project';
+            }
+
             Object.entries(LOCATION_LIST).forEach(([region, locs]) => {
                 const group = document.createElement('optgroup');
                 group.label = region;
@@ -647,11 +700,20 @@
                     const opt = document.createElement('option');
                     opt.value = loc;
                     opt.textContent = loc;
-                    if (project.location === loc) opt.selected = true;
+                    if (mainLocation === loc) opt.selected = true;
                     group.appendChild(opt);
                 });
                 locSelect.appendChild(group);
             });
+
+            // Handle International Project Country input
+            const countryInput = document.getElementById('updateCountry');
+            if (mainLocation === 'International Project') {
+                countryInput.value = countryValue;
+            } else {
+                countryInput.value = '';
+            }
+            handleLocationChange('update');
 
             // Populate Type Select
             const typeSelect = document.getElementById('updateType');
@@ -670,10 +732,18 @@
             const projectPICs = project.pic || [];
             PIC_LIST.forEach(pic => {
                 const label = document.createElement('label');
-                const checked = projectPICs.includes(pic) ? 'checked' : '';
-                label.innerHTML = `<input type="checkbox" value="${pic}" ${checked}> ${pic}`;
+                const isChecked = projectPICs.includes(pic);
+                label.innerHTML = `<input type="checkbox" value="${pic}" ${isChecked ? 'checked' : ''}> ${pic}`;
                 picGroup.appendChild(label);
             });
+
+            // Re-apply mutual exclusivity to Update PICs
+            handlePICSelection('updatePIC');
+            // Trigger change event to gray out others if one is pre-checked
+            const checkedPIC = picGroup.querySelector('input[type="checkbox"]:checked');
+            if (checkedPIC) {
+                checkedPIC.dispatchEvent(new Event('change'));
+            }
 
             // Populate Team Members
             const teamGroup = document.getElementById('updateTeamMembers');
@@ -729,6 +799,14 @@
                 team_members,
                 notes: document.getElementById('updateNotes').value
             };
+
+            // Process Location for International Project
+            if (projectData.location === 'International Project') {
+                const country = document.getElementById('updateCountry').value.trim();
+                if (country) {
+                    projectData.location = `International Project (${country})`;
+                }
+            }
 
             try {
                 const response = await fetch(`${API_URL}/projects/${id}`, {
@@ -810,11 +888,11 @@
             event.preventDefault();
             
             // Collect PICs
-            const pic = Array.from(document.querySelectorAll('#projectPIC input:checked')).map(cb => cb.value);
+            const pic = Array.from(document.querySelectorAll('#addPIC input:checked')).map(cb => cb.value);
             
             // Collect Team Members
             const team_members = {};
-            document.querySelectorAll('#projectTeamMembers .team-member-item').forEach(item => {
+            document.querySelectorAll('#addTeamMembers .team-member-item').forEach(item => {
                 const cb = item.querySelector('input[type="checkbox"]');
                 const feeInput = item.querySelector('input[type="number"]');
                 if (cb.checked) {
@@ -823,18 +901,26 @@
             });
 
             const projectData = {
-                title: document.getElementById('projectTitle').value,
-                location: document.getElementById('projectLocation').value,
-                client: document.getElementById('projectClient').value,
-                type: document.getElementById('projectType').value,
-                progress: document.getElementById('projectProgress').value,
-                start_date: document.getElementById('projectStartDate').value,
-                contract_value: parseInt(document.getElementById('projectContractValue').value) || 0,
-                payment_paid: parseInt(document.getElementById('projectPaymentPaid').value) || 0,
+                title: document.getElementById('addTitle').value,
+                location: document.getElementById('addLocation').value,
+                client: document.getElementById('addClient').value,
+                type: document.getElementById('addType').value,
+                progress: document.getElementById('addProgress').value,
+                start_date: document.getElementById('addStartDate').value,
+                contract_value: parseInt(document.getElementById('addContractValue').value) || 0,
+                payment_paid: parseInt(document.getElementById('addPaymentPaid').value) || 0,
                 pic,
                 team_members,
-                notes: document.getElementById('projectNotes').value
+                notes: document.getElementById('addNotes').value
             };
+
+            // Process Location for International Project
+            if (projectData.location === 'International Project') {
+                const country = document.getElementById('addCountry').value.trim();
+                if (country) {
+                    projectData.location = `International Project (${country})`;
+                }
+            }
 
             const response = await fetch(`${API_URL}/projects`, {
                 method: 'POST',
@@ -867,6 +953,35 @@
 
         // Initial fetch of projects when the page loads
         fetchProjects();
+
+        // Initialize Add Project form fields (PIC and Team Members)
+        function initAddForm() {
+            const picGroup = document.getElementById('addPIC');
+            const teamGroup = document.getElementById('addTeamMembers');
+            picGroup.innerHTML = '';
+            teamGroup.innerHTML = '';
+
+            PIC_LIST.forEach(member => {
+                // PIC Checkboxes
+                const picLabel = document.createElement('label');
+                picLabel.innerHTML = `<input type="checkbox" value="${member}"> ${member}`;
+                picGroup.appendChild(picLabel);
+
+                // Team Member Checkboxes + Percentage
+                const teamDiv = document.createElement('div');
+                teamDiv.className = 'team-member-item';
+                teamDiv.innerHTML = `
+                    <label><input type="checkbox" value="${member}"> ${member}</label>
+                    <input type="number" placeholder="%" min="0" max="100">
+                `;
+                teamGroup.appendChild(teamDiv);
+            });
+
+            // Initialize mutual exclusivity for Add PICs
+            handlePICSelection('addPIC');
+        }
+
+        initAddForm();
     </script>
 </body>
 </html>
