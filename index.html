@@ -5,173 +5,120 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Tracker</title>
     <link rel="icon" type="image/png" href="https://sangkurianginovasi.com/wp-content/uploads/2025/09/cropped-logo_only_bgs.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
+        :root {
+            --bg-color: #0f172a;
+            --container-bg: #1e293b;
+            --text-color: #e2e8f0;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --border-color: #334155;
+            --input-bg: #0f172a;
+            --danger: #ef4444;
+            --success: #10b981;
         }
+        * { box-sizing: border-box; }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
             margin: 20px;
-            background-color: #f4f4f4;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
         }
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow: hidden; /* Prevent child elements from bleeding out */
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
-        h1, h2 {
-            color: #0056b3;
-        }
-        .actions-cell {
-            white-space: nowrap;
-        }
-        .inline-edit-input {
-            width: 100%;
-            padding: 5px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+        h1, h2 { color: #f8fafc; font-weight: 600; }
+        h1 { margin-top: 0; margin-bottom: 30px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .checklist-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            gap: 10px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background: #fff;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px;
+            padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--input-bg);
         }
-        .team-member-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-bottom: 5px;
-        }
-        .team-member-item input[type="number"] {
-            width: 50px;
-            padding: 2px;
-        }
-        .full-width {
-            grid-column: 1 / -1;
-        }
+        .team-member-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+        .team-member-item input[type="number"] { width: 60px; padding: 4px; }
+        .full-width { grid-column: 1 / -1; }
         .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            margin-top: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            width: 100%; overflow-x: auto; margin-top: 20px;
+            border: 1px solid var(--border-color); border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
         form {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            background-color: #f9f9f9;
+            margin-bottom: 20px; padding: 25px; border: 1px solid var(--border-color);
+            border-radius: 8px; background-color: var(--container-bg);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
-        form label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+        form label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-color); }
+        form input[type="text"], form input[type="number"], form input[type="date"], form select, form textarea {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 1px solid var(--border-color); border-radius: 6px;
+            background-color: var(--input-bg); color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            color-scheme: dark;
         }
-        form input[type="text"], 
-        form input[type="number"], 
-        form input[type="date"], 
-        form select, 
-        form textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            display: block;
+        form input:focus, form select:focus, form textarea:focus {
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
         }
-        form textarea {
-            resize: vertical;
-            min-height: 80px;
+        form textarea { resize: vertical; min-height: 100px; }
+        button {
+            background-color: var(--primary); color: white; padding: 12px 20px;
+            border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: 500;
+            transition: background-color 0.2s, transform 0.1s;
         }
-        form button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        form button:hover {
-            background-color: #0056b3;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-            cursor: pointer;
-        }
-        th:hover {
-            background-color: #e0e0e0;
-        }
-        .sort-indicator {
-            margin-left: 5px;
-        }
-        .module-tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+        button:hover { background-color: var(--primary-hover); }
+        button:active { transform: scale(0.98); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid var(--border-color); padding: 12px 15px; text-align: left; }
+        th { background-color: var(--bg-color); cursor: pointer; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+        th:hover { background-color: #1e293b; color: var(--text-color); }
+        tbody tr { transition: background-color 0.2s; }
+        tbody tr:hover { background-color: rgba(255,255,255,0.05); }
+        .sort-indicator { margin-left: 5px; font-size: 0.8em; }
+        .module-tabs { display: flex; gap: 10px; margin-bottom: 0; }
         .module-tab {
-            padding: 10px 20px;
-            background-color: #e0e0e0;
-            border: none;
-            border-radius: 4px 4px 0 0;
-            cursor: pointer;
-            font-weight: bold;
-            color: #666;
+            padding: 12px 24px; background-color: var(--bg-color); border: 1px solid var(--border-color);
+            border-bottom: none; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: 600; color: var(--text-muted);
+            transition: background-color 0.2s, color 0.2s;
         }
-        .module-tab.active {
-            background-color: #f9f9f9;
-            color: #0056b3;
-            border: 1px solid #ddd;
-            border-bottom: none;
-        }
+        .module-tab:hover { background-color: #1e293b; color: var(--text-color); }
+        .module-tab.active { background-color: var(--container-bg); color: var(--primary); border-top: 3px solid var(--primary); }
         .module-content {
-            display: none;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 0 4px 4px 4px;
-            background-color: #f9f9f9;
-            margin-bottom: 30px;
+            display: none; padding: 30px; border: 1px solid var(--border-color);
+            border-radius: 0 8px 8px 8px; background-color: var(--container-bg); margin-bottom: 30px;
         }
-        .module-content.active {
-            display: block;
+        .module-content.active { display: block; }
+        .update-selector { margin-bottom: 25px; padding-bottom: 25px; border-bottom: 1px solid var(--border-color); }
+        .update-selector select { font-size: 1.1em; font-weight: 600; border: 2px solid var(--primary); }
+        
+        /* Toast Container */
+        #toast-container {
+            position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+            display: flex; flex-direction: column; gap: 10px;
         }
-        .update-selector {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #eee;
+        .toast {
+            background-color: var(--container-bg); color: var(--text-color);
+            padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            display: flex; align-items: center; gap: 10px; border-left: 4px solid var(--primary);
+            animation: slideIn 0.3s ease-out forwards; opacity: 0; transform: translateX(100%);
+            font-weight: 500; min-width: 250px;
         }
-        .update-selector select {
-            font-size: 1.1em;
-            font-weight: bold;
-            border: 2px solid #007bff;
-        }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.hiding { animation: fadeOut 0.3s ease-in forwards; }
+        @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(10px); } }
     </style>
 </head>
 <body>
@@ -424,16 +371,19 @@
                         </div>
                         
                         <div class="full-width">
-                            <button type="submit" style="background-color: #28a745;">Save Changes</button>
-                            <button type="button" onclick="cancelUpdate()" style="background-color: #6c757d; margin-left: 10px;">Cancel</button>
-                            <button type="button" id="deleteProjectBtn" onclick="deleteCurrentProject()" style="background-color: #dc3545; margin-left: 10px; display: none;">Delete Project</button>
+                            <button type="submit" style="background-color: var(--success);">Save Changes</button>
+                            <button type="button" onclick="cancelUpdate()" style="background-color: var(--border-color); color: var(--text-color); margin-left: 10px;">Cancel</button>
+                            <button type="button" id="deleteProjectBtn" onclick="deleteCurrentProject()" style="background-color: var(--danger); margin-left: 10px; display: none;">Delete Project</button>
                         </div>
                     </div>
                 </form>
             </div>
         </section>
         <section>
-            <h2>All Projects</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>All Projects</h2>
+                <input type="text" id="searchInput" placeholder="Search by Title, Client, Location, PIC..." style="width: 350px; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--text-color);">
+            </div>
             <div class="table-responsive">
                 <table id="projectsTable" border="1" style="width:100%; border-collapse: collapse; font-size: 14px;">
                     <thead>
@@ -481,10 +431,25 @@
             }
         })();
 
+        
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('hiding');
+                toast.addEventListener('animationend', () => toast.remove());
+            }, 3000);
+        }
+
         const API_URL = window.location.hostname === 'localhost' 
             ? 'http://localhost:3001' 
             : 'https://sir-project-tracker.onrender.com';
-        let allProjects = []; // To store all fetched projects
+        let allProjects = [];
+        let filteredProjects = []; // To store all fetched projects
         let currentSortColumn = 'modified_at';
         let currentSortDirection = 'desc'; // Default sort by modified_at descending
 
@@ -779,13 +744,21 @@
             
             // Collect Team Members
             const team_members = {};
+            let totalPercentage = 0;
             document.querySelectorAll('#updateTeamMembers .team-member-item').forEach(item => {
                 const cb = item.querySelector('input[type="checkbox"]');
                 const feeInput = item.querySelector('input[type="number"]');
                 if (cb.checked) {
-                    team_members[cb.value] = parseInt(feeInput.value) || 0;
+                    const fee = parseInt(feeInput.value) || 0;
+                    totalPercentage += fee;
+                    team_members[cb.value] = fee;
                 }
             });
+            
+            if (totalPercentage > 100) {
+                showToast('Total team percentage cannot exceed 100%!', 'error');
+                return;
+            }
 
             const projectData = {
                 title: document.getElementById('updateTitle').value,
@@ -816,7 +789,7 @@
                     body: JSON.stringify(projectData)
                 });
                 if (response.ok) {
-                    alert('Project updated successfully!');
+                    showToast('Project updated successfully!', 'success');
                     cancelUpdate();
                     fetchProjects(); // Refresh table
                 }
@@ -829,6 +802,7 @@
             try {
                 const response = await fetch(`${API_URL}/projects`);
                 allProjects = await response.json(); // Store fetched projects
+                filteredProjects = [...allProjects];
                 sortAndRenderProjects(currentSortColumn, currentSortDirection);
             } catch (error) {
                 console.error('Error fetching projects:', error);
@@ -840,7 +814,7 @@
             currentSortColumn = column;
             currentSortDirection = direction;
 
-            const sortedProjects = [...allProjects].sort((a, b) => {
+            const sortedProjects = [...filteredProjects].sort((a, b) => {
                 let valA = a[column];
                 let valB = b[column];
 
@@ -863,6 +837,19 @@
             });
             renderProjectsTable(sortedProjects);
         }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            filteredProjects = allProjects.filter(p => {
+                const titleStr = (p.title || '').toLowerCase();
+                const clientStr = (p.client || '').toLowerCase();
+                const locStr = (p.location || '').toLowerCase();
+                const picStr = formatPICDisplay(p.pic).toLowerCase();
+                return titleStr.includes(term) || clientStr.includes(term) || locStr.includes(term) || picStr.includes(term);
+            });
+            sortAndRenderProjects(currentSortColumn, currentSortDirection);
+        });
+
 
         // Event listeners for table headers for sorting
         document.querySelectorAll('#projectsTable th').forEach(header => {
@@ -893,13 +880,21 @@
             
             // Collect Team Members
             const team_members = {};
+            let totalPercentage = 0;
             document.querySelectorAll('#addTeamMembers .team-member-item').forEach(item => {
                 const cb = item.querySelector('input[type="checkbox"]');
                 const feeInput = item.querySelector('input[type="number"]');
                 if (cb.checked) {
-                    team_members[cb.value] = parseInt(feeInput.value) || 0;
+                    const fee = parseInt(feeInput.value) || 0;
+                    totalPercentage += fee;
+                    team_members[cb.value] = fee;
                 }
             });
+            
+            if (totalPercentage > 100) {
+                showToast('Total team percentage cannot exceed 100%!', 'error');
+                return;
+            }
 
             const projectData = {
                 title: document.getElementById('addTitle').value,
@@ -931,6 +926,7 @@
 
             if (response.ok) {
                 event.target.reset();
+                showToast('Project added successfully!', 'success');
                 fetchProjects(); // Refresh the list
             }
         });
@@ -947,6 +943,7 @@
                 });
                 if (response.ok) {
                     cancelUpdate();
+                    showToast('Project deleted successfully!', 'success');
                     fetchProjects(); // Refresh the list
                 }
             }
@@ -984,5 +981,6 @@
 
         initAddForm();
     </script>
+    <div id="toast-container"></div>
 </body>
 </html>
