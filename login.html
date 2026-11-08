@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Project Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .login-container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .login-container h1 {
+            margin-bottom: 30px;
+            color: #007bff;
+            font-size: 2em;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        .form-group input[type="email"],
+        .form-group input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 12px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+        .login-button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        .login-button:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: #dc3545;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Project Tracker Login</h1>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" class="login-button">Login</button>
+            <p id="errorMessage" class="error-message"></p>
+        </form>
+    </div>
+
+    <script src="/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        console.log('login.html script started.');
+
+        // Config comes from GET /config.js (server-side env vars), with the current values as fallback.
+        const APP_CONFIG = window.APP_CONFIG || {};
+        const SUPABASE_URL = APP_CONFIG.SUPABASE_URL || 'https://vsjupkgxrmlmiofmdkex.supabase.co';
+        const SUPABASE_ANON_KEY = APP_CONFIG.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZzanVwa2d4cm1sbWlvZm1ka2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODU4NDIsImV4cCI6MjA5MjQ2MTg0Mn0.1of0BK16kuqEetRzr_Pd6il2Fgwy0Ztw6g5960RD8XA';
+
+        let supabaseClient;
+
+        console.log('Checking for window.supabase:', window.supabase);
+        console.log('Checking for window.supabase.createClient:', typeof window.supabase?.createClient);
+
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase client initialized successfully:', supabaseClient);
+        } else {
+            console.error('Supabase client or createClient function not found on window.supabase.');
+        }
+
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const errorMessage = document.getElementById('errorMessage');
+
+        if (loginForm) {
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                console.log('Login form submitted.');
+                errorMessage.textContent = '';
+
+                const email = emailInput.value;
+                const password = passwordInput.value;
+                console.log('Attempting login for:', email);
+
+                if (!supabaseClient) {
+                    errorMessage.textContent = 'Supabase client not initialized. Cannot log in.';
+                    console.error('Supabase client not initialized.');
+                    return;
+                }
+
+                try {
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password,
+                    });
+
+                    if (error) {
+                        console.error('Supabase login error:', error);
+                        errorMessage.textContent = error.message;
+                        return;
+                    }
+
+                    console.log('Login successful, redirecting...');
+                    // If login is successful, redirect to the main application page
+                    window.location.href = '/'; // Redirect to index.html
+                } catch (err) {
+                    console.error('Unexpected login error:', err);
+                    errorMessage.textContent = `An unexpected error occurred: ${err.message}`;
+                }
+            });
+        } else {
+            console.error('Login form not found!');
+        }
+    </script>
+</body>
+</html>

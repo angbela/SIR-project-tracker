@@ -124,6 +124,10 @@
 <body>
     <div class="container">
         <h1>Project Tracker</h1>
+        <div id="auth-status" style="display: flex; align-items: center; gap: 15px;">
+            <span id="user-email" style="font-weight: 500; color: var(--text-color);"></span>
+            <button id="logout-button" style="background-color: var(--danger);">Logout</button>
+        </div>
 
         <section>
             <div class="module-tabs">
@@ -143,63 +147,7 @@
                         <div>
                             <label for="addLocation">Location:</label>
                             <select id="addLocation" required onchange="handleLocationChange('add')">
-                                <option value="">Select Location</option>
-                                <optgroup label="Sumatra">
-                                    <option value="Aceh">Aceh</option>
-                                    <option value="North Sumatra">North Sumatra</option>
-                                    <option value="West Sumatra">West Sumatra</option>
-                                    <option value="Riau">Riau</option>
-                                    <option value="Riau Islands">Riau Islands</option>
-                                    <option value="Jambi">Jambi</option>
-                                    <option value="South Sumatra">South Sumatra</option>
-                                    <option value="Bengkulu">Bengkulu</option>
-                                    <option value="Lampung">Lampung</option>
-                                    <option value="Bangka Belitung Islands">Bangka Belitung Islands</option>
-                                </optgroup>
-                                <optgroup label="Java">
-                                    <option value="Jakarta">Jakarta</option>
-                                    <option value="Banten">Banten</option>
-                                    <option value="West Java">West Java</option>
-                                    <option value="Central Java">Central Java</option>
-                                    <option value="Special Region of Yogyakarta">Special Region of Yogyakarta</option>
-                                    <option value="East Java">East Java</option>
-                                </optgroup>
-                                <optgroup label="Bali & Nusa Tenggara">
-                                    <option value="Bali">Bali</option>
-                                    <option value="West Nusa Tenggara">West Nusa Tenggara</option>
-                                    <option value="East Nusa Tenggara">East Nusa Tenggara</option>
-                                </optgroup>
-                                <optgroup label="Kalimantan">
-                                    <option value="West Kalimantan">West Kalimantan</option>
-                                    <option value="Central Kalimantan">Central Kalimantan</option>
-                                    <option value="South Kalimantan">South Kalimantan</option>
-                                    <option value="East Kalimantan">East Kalimantan</option>
-                                    <option value="North Kalimantan">North Kalimantan</option>
-                                </optgroup>
-                                <optgroup label="Sulawesi">
-                                    <option value="North Sulawesi">North Sulawesi</option>
-                                    <option value="Gorontalo">Gorontalo</option>
-                                    <option value="Central Sulawesi">Central Sulawesi</option>
-                                    <option value="West Sulawesi">West Sulawesi</option>
-                                    <option value="South Sulawesi">South Sulawesi</option>
-                                    <option value="Southeast Sulawesi">Southeast Sulawesi</option>
-                                </optgroup>
-                                <optgroup label="Maluku">
-                                    <option value="Maluku">Maluku</option>
-                                    <option value="North Maluku">North Maluku</option>
-                                </optgroup>
-                                <optgroup label="Papua">
-                                    <option value="Papua">Papua</option>
-                                    <option value="West Papua">West Papua</option>
-                                    <option value="Central Papua">Central Papua</option>
-                                    <option value="South Papua">South Papua</option>
-                                    <option value="Papua Highlands">Papua Highlands</option>
-                                    <option value="Southwest Papua">Southwest Papua</option>
-                                </optgroup>
-                                <optgroup label="Others">
-                                    <option value="National Project">National Project</option>
-                                    <option value="International Project">International Project</option>
-                                </optgroup>
+                                <!-- Populated from LOCATION_LIST in script -->
                             </select>
                         </div>
                         <div id="addCountryContainer" style="display: none;">
@@ -213,33 +161,13 @@
                         <div>
                             <label for="addType">Type:</label>
                             <select id="addType" required>
-                                <option value="">Select Type</option>
-                                <option value="Numerical Modelling">Numerical Modelling</option>
-                                <option value="Technical Recommendation">Technical Recommendation</option>
-                                <option value="Detailed Engineering and Design">Detailed Engineering and Design</option>
-                                <option value="Advisory Services">Advisory Services</option>
-                                <option value="Masterplan">Masterplan</option>
-                                <option value="Physical Modelling">Physical Modelling</option>
-                                <option value="Concession Study">Concession Study</option>
-                                <option value="Feasibilty Study">Feasibilty Study</option>
-                                <option value="Feasibility, Masterplan, and Investigative-Survey-and-Design Studies">Feasibility, Masterplan, and Investigative-Survey-and-Design Studies</option>
-                                <option value="Feasibility Study">Feasibility Study</option>
-                                <option value="Investigative-Survey-and-Design">Investigative-Survey-and-Design</option>
-                                <option value="Masterplan and Work-Authority-Area-and-Interest-Authority-Area">Masterplan and Work-Authority-Area-and-Interest-Authority-Area</option>
-                                <option value="Basic Engineering and Design">Basic Engineering and Design</option>
-                                <option value="Preliminary Feasibility Study">Preliminary Feasibility Study</option>
-                                <option value="Investigative-Survey-and-Design for Dredging">Investigative-Survey-and-Design for Dredging</option>
-                                <option value="Investigative-Survey-and-Design and Masterplan">Investigative-Survey-and-Design and Masterplan</option>
-                                <option value="Feasibility Study, Masterplan, Investigative-Survey-and-Design">Feasibility Study, Masterplan, Investigative-Survey-and-Design</option>
+                                <!-- Populated from PROJECT_TYPES in script -->
                             </select>
                         </div>
                         <div>
                             <label for="addProgress">Progress:</label>
                             <select id="addProgress" required>
-                                <option value="Not started">Not started</option>
-                                <option value="Ongoing">Ongoing</option>
-                                <option value="Completed">Completed</option>
-                                <option value="On hold">On hold</option>
+                                <!-- Populated from PROGRESS_OPTIONS in script -->
                             </select>
                         </div>
                         <div>
@@ -251,28 +179,14 @@
                             <input type="number" id="addContractValue" required>
                         </div>
                         <div>
-                            <label for="addPaymentPaid">Payment Paid:</label>
+                            <label for="addPaymentPaid">Payment Paid (amount):</label>
                             <input type="number" id="addPaymentPaid" required>
                         </div>
                         
                         <div class="full-width">
                             <label>PIC (Person in Charge):</label>
                             <div id="addPIC" class="checklist-group">
-                                <label><input type="checkbox" value="AMF"> AMF</label>
-                                <label><input type="checkbox" value="MDS"> MDS</label>
-                                <label><input type="checkbox" value="RS"> RS</label>
-                                <label><input type="checkbox" value="AdF"> AdF</label>
-                                <label><input type="checkbox" value="FPB"> FPB</label>
-                                <label><input type="checkbox" value="WH"> WH</label>
-                                <label><input type="checkbox" value="TRS"> TRS</label>
-                                <label><input type="checkbox" value="FR"> FR</label>
-                                <label><input type="checkbox" value="AnF"> AnF</label>
-                                <label><input type="checkbox" value="HW"> HW</label>
-                                <label><input type="checkbox" value="IFK"> IFK</label>
-                                <label><input type="checkbox" value="DF"> DF</label>
-                                <label><input type="checkbox" value="MP"> MP</label>
-                                <label><input type="checkbox" value="JBN"> JBN</label>
-                                <label><input type="checkbox" value="FM"> FM</label>
+                                <!-- Populated from PIC_LIST in script -->
                             </div>
                         </div>
 
@@ -332,10 +246,7 @@
                         <div>
                             <label for="updateProgress">Progress:</label>
                             <select id="updateProgress" required>
-                                <option value="Not started">Not started</option>
-                                <option value="Ongoing">Ongoing</option>
-                                <option value="Completed">Completed</option>
-                                <option value="On hold">On hold</option>
+                                <!-- Populated from PROGRESS_OPTIONS in script -->
                             </select>
                         </div>
                         <div>
@@ -347,7 +258,7 @@
                             <input type="number" id="updateContractValue" required>
                         </div>
                         <div>
-                            <label for="updatePaymentPaid">Payment Paid:</label>
+                            <label for="updatePaymentPaid">Payment Paid (amount):</label>
                             <input type="number" id="updatePaymentPaid" required>
                         </div>
                         
@@ -396,7 +307,7 @@
                             <th data-sort-by="progress">Progress <span class="sort-indicator"></span></th>
                             <th data-sort-by="start_date">Start Date <span class="sort-indicator"></span></th>
                             <th data-sort-by="contract_value">Contract Value <span class="sort-indicator"></span></th>
-                            <th>Payment Paid (%)</th>
+                            <th>Payment Paid</th>
                             <th>PIC</th>
                             <th>Team Members</th>
                             <th style="min-width: 150px;">Notes</th>
@@ -412,25 +323,56 @@
         </section>
     </div>
 
+    <script src="/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Password Protection
-        (function() {
-            const TEAM_PASSWORD = "yoloswag";
-            const savedAuth = localStorage.getItem('team_auth');
-            
-            if (savedAuth !== TEAM_PASSWORD) {
-                const pass = prompt("Please enter the team access password:");
-                if (pass === TEAM_PASSWORD) {
-                    localStorage.setItem('team_auth', pass);
-                } else {
-                    alert("Access Denied");
-                    document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column;font-family:sans-serif;'><h1>Unauthorized Access</h1><p>Please refresh and enter the correct password.</p></div>";
-                    window.stop();
-                    throw new Error("Unauthorized");
+        // Config comes from GET /config.js (server-side env vars), with the current values as fallback.
+        const APP_CONFIG = window.APP_CONFIG || {};
+        const SUPABASE_URL = APP_CONFIG.SUPABASE_URL || 'https://vsjupkgxrmlmiofmdkex.supabase.co';
+        const SUPABASE_ANON_KEY = APP_CONFIG.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZzanVwa2d4cm1sbWlvZm1ka2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODU4NDIsImV4cCI6MjA5MjQ2MTg0Mn0.1of0BK16kuqEetRzr_Pd6il2Fgwy0Ztw6g5960RD8XA';
+
+        let supabaseClient;
+        let currentAccessToken = null; // Declare a global variable for the access token
+
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase client initialized successfully in index.html:', supabaseClient);
+        } else {
+            console.error('Supabase client or createClient function not found on window.supabase in index.html.');
+        }
+
+        // Authentication Check
+        (async function() {
+            if (!supabaseClient) {
+                console.error('Supabase client not initialized in index.html. Redirecting to login.');
+                window.location.href = '/login.html';
+                return;
+            }
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = '/login.html';
+            } else {
+                currentAccessToken = session.access_token; // Store the access token
+                // Display user email
+                const userEmailSpan = document.getElementById('user-email');
+                if (userEmailSpan && session.user && session.user.email) {
+                    userEmailSpan.textContent = `Logged in as: ${session.user.email}`;
                 }
+                // Now that the session is ready, load the data (avoids an unauthenticated first request)
+                fetchProjects();
             }
         })();
-
+        
+        // Logout functionality
+        document.getElementById('logout-button').addEventListener('click', async () => {
+            const { error } = await supabaseClient.auth.signOut();
+            if (!error) {
+                window.location.href = '/login.html';
+            } else {
+                console.error('Error logging out:', error);
+                showToast('Error logging out.', 'error');
+            }
+        });
         
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
@@ -477,6 +419,78 @@
         ];
         const PROGRESS_OPTIONS = ["Not started", "Ongoing", "Completed", "On hold"];
 
+        // Return a valid (auto-refreshed) access token, or null when there is no session.
+        // getSession() refreshes an expired token on its own, so the API never receives a stale JWT.
+        async function getAccessToken() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            currentAccessToken = session ? session.access_token : null;
+            return currentAccessToken;
+        }
+
+        // ---- Shared option builders (single source of truth: the constants below) ----
+        // The add form's selects are generated from these lists; previously the same
+        // options were hardcoded in HTML, so adding a PIC/type/location meant editing
+        // two places and the copies drifted.
+        function buildLocationOptions(selectedValue) {
+            const select = document.getElementById('addLocation');
+            if (!select) return;
+            select.innerHTML = '<option value="">Select Location</option>';
+            Object.entries(LOCATION_LIST).forEach(([region, locs]) => {
+                const group = document.createElement('optgroup');
+                group.label = region;
+                locs.forEach(loc => {
+                    const opt = document.createElement('option');
+                    opt.value = loc;
+                    opt.textContent = loc;
+                    if (loc === selectedValue) opt.selected = true;
+                    group.appendChild(opt);
+                });
+                select.appendChild(group);
+            });
+        }
+
+        function buildTypeOptions(selectedValue) {
+            const select = document.getElementById('addType');
+            if (!select) return;
+            select.innerHTML = '<option value="">Select Type</option>';
+            PROJECT_TYPES.forEach(type => {
+                const opt = document.createElement('option');
+                opt.value = type;
+                opt.textContent = type;
+                if (type === selectedValue) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        // Fills a <select> with the given values. Used for both the add and update forms,
+        // so every Progress/Type/Location dropdown comes from the same list.
+        function fillSelect(select, values, selectedValue) {
+            if (!select) return;
+            select.innerHTML = '';
+            values.forEach(value => {
+                const opt = document.createElement('option');
+                opt.value = value;
+                opt.textContent = value;
+                if (value === selectedValue) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        function buildProgressOptions(selectedValue, selectId = 'addProgress') {
+            fillSelect(document.getElementById(selectId), PROGRESS_OPTIONS, selectedValue);
+        }
+
+        // Escape a value for safe interpolation into HTML text or an attribute.
+        function esc(value) {
+            if (value === null || value === undefined) return '';
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
         // Helper to format currency (Updated: No currency prefix)
         function formatNumber(value) {
             return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(value);
@@ -490,7 +504,17 @@
 
         function formatTeamDisplay(team) {
             if (!team) return '';
-            const members = typeof team === 'string' ? JSON.parse(team) : team;
+            let members = team;
+            if (typeof team === 'string') {
+                try {
+                    members = JSON.parse(team);
+                } catch (e) {
+                    // Legacy/malformed value: show it as-is instead of breaking the whole table
+                    console.warn('Could not parse team_members:', team, e);
+                    return team;
+                }
+            }
+            if (typeof members !== 'object' || members === null) return String(members);
             return Object.entries(members).map(([name, fee]) => `${name} (${fee}%)`).join(', ');
         }
 
@@ -506,23 +530,27 @@
             }
         }
 
-        // Handle PIC checkbox mutual exclusivity
+        // Handle PIC checkbox mutual exclusivity.
+        // Delegated on the container so repeated calls (re-rendering the form) never stack listeners.
         function handlePICSelection(containerId) {
             const container = document.getElementById(containerId);
-            const checkboxes = container.querySelectorAll('input[type="checkbox"]');
-            
-            checkboxes.forEach(cb => {
-                cb.addEventListener('change', () => {
-                    const checkedOne = Array.from(checkboxes).find(c => c.checked);
-                    checkboxes.forEach(c => {
-                        if (checkedOne && c !== checkedOne) {
-                            c.disabled = true;
-                            c.parentElement.style.opacity = '0.5';
-                        } else {
-                            c.disabled = false;
-                            c.parentElement.style.opacity = '1';
-                        }
-                    });
+            if (!container || container.dataset.picBound === 'true') return;
+            container.dataset.picBound = 'true';
+
+            container.addEventListener('change', (event) => {
+                const cb = event.target;
+                if (!cb.matches('input[type="checkbox"]')) return;
+
+                const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+                const checkedOne = Array.from(checkboxes).find(c => c.checked);
+                checkboxes.forEach(c => {
+                    if (checkedOne && c !== checkedOne) {
+                        c.disabled = true;
+                        c.parentElement.style.opacity = '0.5';
+                    } else {
+                        c.disabled = false;
+                        c.parentElement.style.opacity = '1';
+                    }
                 });
             });
         }
@@ -565,19 +593,19 @@
 
                 tableRow.innerHTML = `
                     <td>${index + 1}</td>
-                    <td style="min-width: 200px; word-wrap: break-word; white-space: normal;">${project.title || ''}</td>
-                    <td>${project.location || ''}</td>
-                    <td>${project.client || ''}</td>
-                    <td>${project.type || ''}</td>
-                    <td>${project.progress || ''}</td>
-                    <td>${project.start_date ? new Date(project.start_date).toLocaleDateString() : ''}</td>
+                    <td style="min-width: 200px; word-wrap: break-word; white-space: normal;">${esc(project.title)}</td>
+                    <td>${esc(project.location)}</td>
+                    <td>${esc(project.client)}</td>
+                    <td>${esc(project.type)}</td>
+                    <td>${esc(project.progress)}</td>
+                    <td>${project.start_date ? esc(new Date(project.start_date).toLocaleDateString()) : ''}</td>
                     <td>${formatNumber(contractVal)}</td>
                     <td>${formatNumber(paidVal)} (${percent}%)</td>
-                    <td>${formatPICDisplay(project.pic)}</td>
-                    <td>${formatTeamDisplay(project.team_members)}</td>
-                    <td style="min-width: 200px; word-wrap: break-word; white-space: normal;" title="${project.notes || ''}">${project.notes || ''}</td>
-                    <td>${modifiedAt ? new Date(modifiedAt).toLocaleString() : '-'}</td>
-                    <td style="font-weight: bold; color: ${statusColor};">${statusText}</td>
+                    <td>${esc(formatPICDisplay(project.pic))}</td>
+                    <td>${esc(formatTeamDisplay(project.team_members))}</td>
+                    <td style="min-width: 200px; word-wrap: break-word; white-space: normal;" title="${esc(project.notes)}">${esc(project.notes)}</td>
+                    <td>${modifiedAt ? esc(new Date(modifiedAt).toLocaleString()) : '-'}</td>
+                    <td style="font-weight: bold; color: ${statusColor};">${esc(statusText)}</td>
                 `;
                 projectsTableBody.appendChild(tableRow);
             });
@@ -641,7 +669,8 @@
             document.getElementById('updateId').value = project.id;
             document.getElementById('updateTitle').value = project.title || '';
             document.getElementById('updateClient').value = project.client || '';
-            document.getElementById('updateProgress').value = project.progress || 'Not started';
+            // Populate Progress Select (the options are no longer hardcoded in the HTML)
+            buildProgressOptions(project.progress || 'Not started', 'updateProgress');
             document.getElementById('updateStartDate').value = project.start_date ? project.start_date.split('T')[0] : '';
             document.getElementById('updateContractValue').value = project.contract_value || 0;
             document.getElementById('updatePaymentPaid').value = project.payment_paid || 0;
@@ -783,15 +812,30 @@
             }
 
             try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session) {
+                    console.error('No active session found. Cannot update project.');
+                    showToast('Not logged in. Please log in again.', 'error');
+                    window.location.href = '/login.html';
+                    return;
+                }
+                currentAccessToken = session.access_token;
+
                 const response = await fetch(`${API_URL}/projects/${id}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentAccessToken}`
+                    },
                     body: JSON.stringify(projectData)
                 });
                 if (response.ok) {
                     showToast('Project updated successfully!', 'success');
                     cancelUpdate();
                     fetchProjects(); // Refresh table
+                } else {
+                    const body = await response.json().catch(() => ({}));
+                    showToast(`Could not update project: ${body.error || response.status}`, 'error');
                 }
             } catch (error) {
                 console.error('Error updating project:', error);
@@ -800,12 +844,36 @@
 
         async function fetchProjects() {
             try {
-                const response = await fetch(`${API_URL}/projects`);
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session) {
+                    console.error('No active session found. Cannot fetch projects.');
+                    showToast('Not logged in. Please log in again.', 'error');
+                    window.location.href = '/login.html';
+                    return;
+                }
+                currentAccessToken = session.access_token;
+
+                const response = await fetch(`${API_URL}/projects`, {
+                    headers: {
+                        'Authorization': `Bearer ${currentAccessToken}`
+                    }
+                });
+                if (!response.ok) {
+                    const body = await response.json().catch(() => ({}));
+                    if (response.status === 401) {
+                        showToast('Session expired. Please log in again.', 'error');
+                        window.location.href = '/login.html';
+                        return;
+                    }
+                    throw new Error(body.error || `HTTP error! status: ${response.status}`);
+                }
                 allProjects = await response.json(); // Store fetched projects
+                if (!Array.isArray(allProjects)) allProjects = [];
                 filteredProjects = [...allProjects];
                 sortAndRenderProjects(currentSortColumn, currentSortDirection);
             } catch (error) {
                 console.error('Error fetching projects:', error);
+                showToast(`Error fetching projects: ${error.message}`, 'error');
             }
         }
 
@@ -918,16 +986,40 @@
                 }
             }
 
+            const token = await getAccessToken();
+            if (!token) {
+                showToast('Not logged in. Please log in again.', 'error');
+                window.location.href = '/login.html';
+                return;
+            }
+
             const response = await fetch(`${API_URL}/projects`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify(projectData)
             });
 
             if (response.ok) {
                 event.target.reset();
+                // Reset the generated selects (and the International Country field) to defaults
+                buildLocationOptions('');
+                buildTypeOptions('');
+                buildProgressOptions('Not started');
+                document.getElementById('addCountryContainer').style.display = 'none';
+                document.getElementById('addCountry').value = '';
+                // Re-enable PIC checkboxes (reset() keeps the disabled state from mutual exclusivity)
+                document.querySelectorAll('#addPIC input[type="checkbox"]').forEach(cb => {
+                    cb.disabled = false;
+                    cb.parentElement.style.opacity = '1';
+                });
                 showToast('Project added successfully!', 'success');
                 fetchProjects(); // Refresh the list
+            } else {
+                const body = await response.json().catch(() => ({}));
+                showToast(`Could not add project: ${body.error || response.status}`, 'error');
             }
         });
 
@@ -938,22 +1030,52 @@
             if (!id) return;
             
             if (confirm('Are you sure you want to delete this project?')) {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session) {
+                    console.error('No active session found. Cannot delete project.');
+                    showToast('Not logged in. Please log in again.', 'error');
+                    window.location.href = '/login.html';
+                    return;
+                }
+                currentAccessToken = session.access_token;
+
                 const response = await fetch(`${API_URL}/projects/${id}`, {
                     method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${currentAccessToken}`
+                    }
                 });
                 if (response.ok) {
                     cancelUpdate();
                     showToast('Project deleted successfully!', 'success');
                     fetchProjects(); // Refresh the list
+                } else {
+                    const body = await response.json().catch(() => ({}));
+                    showToast(`Could not delete project: ${body.error || response.status}`, 'error');
                 }
             }
         }
 
-        // Initial fetch of projects when the page loads
-        fetchProjects();
+        // Initial load of projects is triggered once the auth session is confirmed
+        // (see the authentication check above).
+        // Keep the token fresh while the page stays open (Supabase refreshes it ~every hour).
+        if (supabaseClient) {
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_OUT' || !session) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                currentAccessToken = session.access_token;
+            });
+        }
 
-        // Initialize Add Project form fields (PIC and Team Members)
+        // Initialize Add Project form fields (selects, PIC and Team Members)
         function initAddForm() {
+            // Selects: generated from the shared constants
+            buildLocationOptions('');
+            buildTypeOptions('');
+            buildProgressOptions('Not started');
+
             const picGroup = document.getElementById('addPIC');
             const teamGroup = document.getElementById('addTeamMembers');
             picGroup.innerHTML = '';
