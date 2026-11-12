@@ -119,6 +119,80 @@
         .toast.hiding { animation: fadeOut 0.3s ease-in forwards; }
         @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
         @keyframes fadeOut { to { opacity: 0; transform: translateY(10px); } }
+
+        /* ---- Dashboard ---- */
+        .kpi-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .kpi-card { background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 18px 20px; }
+        .kpi-label { font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; }
+        .kpi-value { font-size: 1.6em; font-weight: 700; color: #f8fafc; line-height: 1.2; }
+        .kpi-sub { font-size: 0.8em; color: var(--text-muted); margin-top: 6px; }
+
+        .dashboard-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
+        .filter-group { display: flex; gap: 8px; }
+        .filter-btn {
+            background-color: var(--input-bg); color: var(--text-muted); border: 1px solid var(--border-color);
+            padding: 8px 16px; border-radius: 6px; font-size: 0.9em; font-weight: 500;
+        }
+        .filter-btn:hover { background-color: #1e293b; color: var(--text-color); }
+        .filter-btn.active { background-color: var(--primary); border-color: var(--primary); color: white; }
+
+        .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
+        .member-card {
+            background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 10px;
+            padding: 18px; display: flex; flex-direction: column; gap: 14px;
+        }
+        .member-card.is-pic { border-color: var(--primary); }
+        .member-head { display: flex; align-items: center; gap: 12px; }
+        .member-avatar {
+            width: 42px; height: 42px; border-radius: 50%; background-color: var(--primary);
+            display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95em;
+            color: white; flex-shrink: 0;
+        }
+        .member-avatar.low { background-color: var(--danger); }
+        .member-name { font-weight: 600; font-size: 1.05em; color: #f8fafc; }
+        .member-meta { font-size: 0.78em; color: var(--text-muted); }
+        .member-badges { margin-left: auto; display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+        .badge {
+            font-size: 0.7em; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+            background-color: var(--border-color); color: var(--text-color); white-space: nowrap;
+        }
+        .badge.pic { background-color: var(--primary); color: white; }
+        .badge.warn { background-color: var(--danger); color: white; }
+        .badge.ok { background-color: var(--success); color: white; }
+
+        .money-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .money-item { background-color: rgba(255,255,255,0.03); border-radius: 6px; padding: 8px 10px; }
+        .money-item .lbl { font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+        .money-item .val { font-size: 1em; font-weight: 600; color: var(--text-color); }
+        .money-item .val.earned { color: var(--success); }
+        .money-item .val.pending { color: #f59e0b; }
+        .money-bar { height: 6px; border-radius: 3px; background-color: var(--border-color); overflow: hidden; }
+        .money-bar > span { display: block; height: 100%; background-color: var(--success); }
+
+        .member-projects { display: flex; flex-direction: column; gap: 6px; }
+        .member-projects .empty { font-size: 0.82em; color: var(--text-muted); font-style: italic; }
+        .mini-project {
+            display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px;
+            background-color: rgba(255,255,255,0.04);
+            font-size: 0.82em;
+        }
+        .mini-project .title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-color); }
+        .mini-project .share { color: var(--text-muted); font-weight: 600; flex-shrink: 0; }
+        .progress-chip { font-size: 0.68em; font-weight: 700; padding: 2px 7px; border-radius: 999px; flex-shrink: 0; white-space: nowrap; }
+        .progress-chip[data-progress="Ongoing"] { background-color: #1d4ed8; color: white; }
+        .progress-chip[data-progress="Finishing"] { background-color: #7c3aed; color: white; }
+        .progress-chip[data-progress="Completed"] { background-color: #15803d; color: white; }
+        .progress-chip[data-progress="On hold"] { background-color: #b45309; color: white; }
+        .progress-chip[data-progress="Not started"] { background-color: var(--border-color); color: var(--text-color); }
+        .section-subtitle { font-size: 0.85em; color: var(--text-muted); font-weight: 400; margin-top: 4px; }
+        #memberTable td, #memberTable th { font-size: 0.86em; }
+
+        .export-bar {
+            display: flex; justify-content: space-between; align-items: center; gap: 15px;
+            flex-wrap: wrap; margin-top: 15px;
+        }
+        #exportXlsxBtn { display: inline-flex; align-items: center; gap: 8px; }
+        #exportXlsxBtn:disabled { opacity: 0.6; cursor: progress; }
     </style>
 </head>
 <body>
@@ -133,6 +207,7 @@
             <div class="module-tabs">
                 <button class="module-tab active" onclick="switchModule('add')">Add New Project</button>
                 <button class="module-tab" onclick="switchModule('update')">Update Project</button>
+                <button class="module-tab" onclick="switchModule('dashboard')">Dashboard</button>
             </div>
 
             <!-- Module 1: Add Project -->
@@ -155,8 +230,11 @@
                             <input type="text" id="addCountry" placeholder="e.g. Singapore">
                         </div>
                         <div>
-                            <label for="addCompany">Company:</label>
-                            <input type="text" id="addCompany">
+                            <label for="addCompanyType">Company:</label>
+                            <select id="addCompanyType" onchange="handleCompanyTypeChange('add')">
+                                <!-- Populated from COMPANY_OPTIONS in script -->
+                            </select>
+                            <input type="text" id="addCompanyName" placeholder="Name of company (e.g. PT LAPI)" style="display: none; margin-top: 8px;">
                         </div>
                         <div>
                             <label for="addClient">Client:</label>
@@ -238,8 +316,11 @@
                             <input type="text" id="updateCountry" placeholder="e.g. Singapore">
                         </div>
                         <div>
-                            <label for="updateCompany">Company:</label>
-                            <input type="text" id="updateCompany">
+                            <label for="updateCompanyType">Company:</label>
+                            <select id="updateCompanyType" onchange="handleCompanyTypeChange('update')">
+                                <!-- Populated from COMPANY_OPTIONS in script -->
+                            </select>
+                            <input type="text" id="updateCompanyName" placeholder="Name of company (e.g. PT LAPI)" style="display: none; margin-top: 8px;">
                         </div>
                         <div>
                             <label for="updateClient">Client:</label>
@@ -297,6 +378,49 @@
                     </div>
                 </form>
             </div>
+
+            <!-- Module 3: Team Dashboard -->
+            <div id="dashboardModule" class="module-content">
+                <h2>Team Dashboard</h2>
+                <p class="section-subtitle">Expected = contract value share. Earned = the same share of what the client has actually paid.</p>
+
+                <div class="kpi-strip" id="dashboardKpis">
+                    <!-- Populated in script -->
+                </div>
+
+                <div class="dashboard-toolbar">
+                    <div class="filter-group" id="dashboardFilters">
+                        <button type="button" class="filter-btn active" data-filter="all">All projects</button>
+                        <button type="button" class="filter-btn" data-filter="active">Active only</button>
+                        <button type="button" class="filter-btn" data-filter="completed">Completed only</button>
+                    </div>
+                    <span class="section-subtitle" id="dashboardScope"></span>
+                </div>
+
+                <div class="member-grid" id="memberGrid">
+                    <!-- One card per team member, populated in script -->
+                </div>
+
+                <h2 style="margin-top: 35px;">Workload &amp; Earnings</h2>
+                <p class="section-subtitle">Sorted by money earned so far — the people at the top of the list have the least, so they are the ones to allocate new projects to.</p>
+                <div class="table-responsive">
+                    <table id="memberTable" border="1" style="width:100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th data-sort-by="name">Member <span class="sort-indicator"></span></th>
+                                <th data-sort-by="activeCount">Active Projects <span class="sort-indicator"></span></th>
+                                <th data-sort-by="expected">Expected <span class="sort-indicator"></span></th>
+                                <th data-sort-by="earned">Earned <span class="sort-indicator"></span></th>
+                                <th data-sort-by="pending">Pending <span class="sort-indicator"></span></th>
+                                <th data-sort-by="paidRatio">% of Expected Paid <span class="sort-indicator"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Populated in script -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </section>
         <section>
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -328,6 +452,10 @@
                         <!-- Projects will be loaded here -->
                     </tbody>
                 </table>
+            </div>
+            <div class="export-bar">
+                <span class="section-subtitle" id="exportHint">Exports every project, newest modified first, as a formatted .xlsx workbook.</span>
+                <button type="button" id="exportXlsxBtn">Export to Excel (.xlsx)</button>
             </div>
         </section>
     </div>
@@ -426,7 +554,13 @@
             "Investigative-Survey-and-Design and Masterplan",
             "Feasibility Study, Masterplan, Investigative-Survey-and-Design"
         ];
-        const PROGRESS_OPTIONS = ["Not started", "Ongoing", "Completed", "On hold"];
+        const PROGRESS_OPTIONS = ["Not started", "Ongoing", "Finishing", "Completed", "On hold"];
+        // Company is stored as one plain string in Supabase:
+        //   "Internal (SIR)"              -> COMPANY_OPTIONS[0]
+        //   "External - <company name>"   -> COMPANY_OPTIONS[1] plus the free-text field
+        const COMPANY_INTERNAL = 'Internal (SIR)';
+        const COMPANY_EXTERNAL = 'External';
+        const COMPANY_OPTIONS = [COMPANY_INTERNAL, COMPANY_EXTERNAL];
 
         // Return a valid (auto-refreshed) access token, or null when there is no session.
         // getSession() refreshes an expired token on its own, so the API never receives a stale JWT.
@@ -525,6 +659,54 @@
             }
             if (typeof members !== 'object' || members === null) return String(members);
             return Object.entries(members).map(([name, fee]) => `${name} (${fee}%)`).join(', ');
+        }
+
+        // ---- Company helpers ----
+        // Fills the Company dropdown for the given form ('add' or 'update').
+        function buildCompanyOptions(selectedValue, prefix = 'add') {
+            const select = document.getElementById(`${prefix}CompanyType`);
+            if (!select) return;
+            select.innerHTML = '<option value="">Select Company</option>';
+            COMPANY_OPTIONS.forEach(value => {
+                const opt = document.createElement('option');
+                opt.value = value;
+                opt.textContent = value;
+                if (value === selectedValue) opt.selected = true;
+                select.appendChild(opt);
+            });
+            handleCompanyTypeChange(prefix);
+        }
+
+        // Shows the company-name field only when "External" is selected.
+        function handleCompanyTypeChange(prefix) {
+            const select = document.getElementById(`${prefix}CompanyType`);
+            const nameInput = document.getElementById(`${prefix}CompanyName`);
+            if (!select || !nameInput) return;
+            const isExternal = select.value === COMPANY_EXTERNAL;
+            nameInput.style.display = isExternal ? 'block' : 'none';
+            if (!isExternal) nameInput.value = '';
+        }
+
+        // Turns the dropdown + optional name into the single string stored in Supabase.
+        function buildCompanyValue(prefix = 'add') {
+            const type = document.getElementById(`${prefix}CompanyType`).value;
+            if (type !== COMPANY_EXTERNAL) return type; // 'Internal (SIR)' or ''
+            const name = document.getElementById(`${prefix}CompanyName`).value.trim();
+            return name ? `${COMPANY_EXTERNAL} - ${name}` : COMPANY_EXTERNAL;
+        }
+
+        // Splits a stored value back into { type, name } for the edit form.
+        // Handles the plain values written before the dropdown existed ("PT LAPI" etc.)
+        // by showing them as External with the old text as the company name.
+        function parseCompanyValue(value) {
+            const raw = (value || '').trim();
+            if (!raw) return { type: '', name: '' };
+            if (raw === COMPANY_INTERNAL) return { type: COMPANY_INTERNAL, name: '' };
+            if (raw === COMPANY_EXTERNAL) return { type: COMPANY_EXTERNAL, name: '' };
+            if (raw.startsWith(`${COMPANY_EXTERNAL} - `)) {
+                return { type: COMPANY_EXTERNAL, name: raw.slice(`${COMPANY_EXTERNAL} - `.length) };
+            }
+            return { type: COMPANY_EXTERNAL, name: raw };
         }
 
         // Handle Location change for International Project country input
@@ -634,6 +816,308 @@
             });
         }
 
+        // ================= Team dashboard =================
+        // Money model (no extra columns needed):
+        //   expected = contract_value * share%   -> what the member is contracted to earn
+        //   earned   = payment_paid   * share%   -> the same share of what the client has paid
+        // Project progress is deliberately NOT part of the money: it tracks the project's own
+        // state. A PIC always counts as a member with at least 1%, so they are never invisible.
+        const DASHBOARD_FILTERS = { all: 'All projects', active: 'Active only', completed: 'Completed only' };
+        let dashboardFilter = 'all';
+        let dashboardSortColumn = 'earned';
+        let dashboardSortDirection = 'asc'; // ascending: lowest earners first, that is the allocation view
+        let lastMemberStats = [];
+
+        // True when a project still counts as work in progress (anything but Completed).
+        function isActiveProject(project) {
+            return (project.progress || '') !== 'Completed';
+        }
+
+        // The PIC is a member too, even when they were left out of team_members.
+        // A PIC with no explicit share gets 1% so they show up (never 0).
+        function getMemberShares(project) {
+            let team = project.team_members || {};
+            if (typeof team === 'string') {
+                try {
+                    team = JSON.parse(team);
+                } catch (e) {
+                    team = {};
+                }
+            }
+            if (typeof team !== 'object' || team === null) team = {};
+
+            const shares = {};
+            Object.entries(team).forEach(([name, fee]) => {
+                shares[name] = parseFloat(fee) || 0;
+            });
+
+            let pics = project.pic || [];
+            if (typeof pics === 'string') pics = [pics];
+            pics.forEach(name => {
+                if (!name) return;
+                if (shares[name] === undefined) shares[name] = 1;
+            });
+
+            return shares;
+        }
+
+        // One row per member of PIC_LIST, plus anyone who appears in a project but is not
+        // in PIC_LIST (so no work is ever lost from the numbers).
+        function computeMemberStats(projects, memberList) {
+            const names = (memberList || []).slice();
+            projects.forEach(project => {
+                Object.keys(getMemberShares(project)).forEach(name => {
+                    if (name && !names.includes(name)) names.push(name);
+                });
+            });
+
+            const stats = {};
+            names.forEach(name => {
+                stats[name] = {
+                    name,
+                    expected: 0,
+                    earned: 0,
+                    pending: 0,
+                    paidRatio: 0,
+                    activeCount: 0,
+                    completedCount: 0,
+                    picCount: 0,
+                    lastTouched: null,
+                    projects: []
+                };
+            });
+
+            projects.forEach(project => {
+                const shares = getMemberShares(project);
+                const contractValue = parseFloat(project.contract_value) || 0;
+                const paidValue = parseFloat(project.payment_paid) || 0;
+                let pics = project.pic || [];
+                if (typeof pics === 'string') pics = [pics];
+                const touched = project.modified_at || project.created_at || null;
+                const active = isActiveProject(project);
+
+                Object.entries(shares).forEach(([name, share]) => {
+                    const member = stats[name];
+                    if (!member) return;
+
+                    const expected = contractValue * share / 100;
+                    const earned = paidValue * share / 100;
+
+                    member.expected += expected;
+                    member.earned += earned;
+                    if (active) member.activeCount++; else member.completedCount++;
+                    if (pics.includes(name)) member.picCount++;
+                    if (touched && (!member.lastTouched || new Date(touched) > new Date(member.lastTouched))) {
+                        member.lastTouched = touched;
+                    }
+                    member.projects.push({
+                        id: project.id,
+                        title: project.title,
+                        progress: project.progress,
+                        share,
+                        expected,
+                        earned,
+                        active
+                    });
+                });
+            });
+
+            return Object.values(stats).map(member => {
+                member.pending = member.expected - member.earned;
+                member.paidRatio = member.expected > 0 ? (member.earned / member.expected) * 100 : 0;
+                // Active work first, then the rest by how much is still to come in.
+                member.projects.sort((a, b) => {
+                    if (a.active !== b.active) return a.active ? -1 : 1;
+                    return b.pending - a.pending;
+                });
+                return member;
+            });
+        }
+
+        // Rp 1.250.000.000 -> "Rp 1,25 M"; keeps small numbers readable in the cards.
+        function formatMillions(value) {
+            const amount = parseFloat(value) || 0;
+            const millions = amount / 1000000;
+            const decimals = Math.abs(millions) >= 100 || millions === 0 ? 0 : 2;
+            const text = millions.toLocaleString('id-ID', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: decimals
+            });
+            return `Rp ${text} M`;
+        }
+
+        function projectsForFilter(projects, filter) {
+            if (filter === 'active') return projects.filter(isActiveProject);
+            if (filter === 'completed') return projects.filter(p => !isActiveProject(p));
+            return projects;
+        }
+
+        function renderDashboardKpis(projects) {
+            const container = document.getElementById('dashboardKpis');
+            if (!container) return;
+
+            const totals = projects.reduce((acc, project) => {
+                acc.contract += parseFloat(project.contract_value) || 0;
+                acc.paid += parseFloat(project.payment_paid) || 0;
+                if (isActiveProject(project)) acc.active++;
+                return acc;
+            }, { contract: 0, paid: 0, active: 0 });
+
+            const outstanding = totals.contract - totals.paid;
+            const paidPercent = totals.contract > 0 ? (totals.paid / totals.contract) * 100 : 0;
+            const stale = projects.filter(p => {
+                if (!isActiveProject(p)) return false;
+                const touched = p.modified_at || p.created_at;
+                if (!touched) return true;
+                const days = Math.abs(new Date() - new Date(touched)) / (1000 * 60 * 60 * 24);
+                return days >= 7;
+            }).length;
+
+            const kpis = [
+                { label: 'Total Contract Value', value: formatMillions(totals.contract), sub: `${projects.length} project${projects.length === 1 ? '' : 's'}` },
+                { label: 'Paid by Client', value: formatMillions(totals.paid), sub: `${paidPercent.toFixed(1)}% of contract value` },
+                { label: 'Outstanding', value: formatMillions(outstanding), sub: 'still to be invoiced/collected' },
+                { label: 'Active Projects', value: String(totals.active), sub: `${stale} need an update` }
+            ];
+
+            container.innerHTML = kpis.map(kpi => `
+                <div class="kpi-card">
+                    <div class="kpi-label">${esc(kpi.label)}</div>
+                    <div class="kpi-value">${esc(kpi.value)}</div>
+                    <div class="kpi-sub">${esc(kpi.sub)}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderMemberCards(members) {
+            const grid = document.getElementById('memberGrid');
+            if (!grid) return;
+
+            if (!members.length) {
+                grid.innerHTML = '<div class="member-projects"><span class="empty">No members to show.</span></div>';
+                return;
+            }
+
+            // Lowest earners first: they are the ones to allocate new projects to.
+            const ordered = [...members].sort((a, b) => a.earned - b.earned);
+
+            grid.innerHTML = ordered.map(member => {
+                const paidPercent = Math.min(100, Math.max(0, member.paidRatio));
+                const activeProjects = member.projects.filter(p => p.active);
+                const shownProjects = activeProjects.length ? activeProjects : member.projects;
+                const projectRows = shownProjects.length
+                    ? shownProjects.map(project => `
+                        <div class="mini-project" title="${esc(project.title)}">
+                            <span class="title">${esc(project.title || '(untitled)')}</span>
+                            <span class="progress-chip" data-progress="${esc(project.progress || '')}">${esc(project.progress || '-')}</span>
+                            <span class="share">${esc(String(project.share))}%</span>
+                        </div>
+                    `).join('')
+                    : '<span class="empty">No projects yet — good candidate for the next allocation.</span>';
+
+                return `
+                    <div class="member-card${member.picCount > 0 ? ' is-pic' : ''}">
+                        <div class="member-head">
+                            <div class="member-avatar${member.earned === 0 ? ' low' : ''}">${esc(member.name.slice(0, 3))}</div>
+                            <div>
+                                <div class="member-name">${esc(member.name)}</div>
+                                <div class="member-meta">${member.activeCount} active &middot; ${member.completedCount} completed</div>
+                            </div>
+                            <div class="member-badges">
+                                ${member.picCount > 0 ? `<span class="badge pic">PIC ×${member.picCount}</span>` : ''}
+                                ${member.earned === 0 ? '<span class="badge warn">No earnings yet</span>' : ''}
+                            </div>
+                        </div>
+
+                        <div class="money-grid">
+                            <div class="money-item">
+                                <div class="lbl">Earned</div>
+                                <div class="val earned">${esc(formatMillions(member.earned))}</div>
+                            </div>
+                            <div class="money-item">
+                                <div class="lbl">Pending</div>
+                                <div class="val pending">${esc(formatMillions(member.pending))}</div>
+                            </div>
+                            <div class="money-item">
+                                <div class="lbl">Expected</div>
+                                <div class="val">${esc(formatMillions(member.expected))}</div>
+                            </div>
+                            <div class="money-item">
+                                <div class="lbl">Paid so far</div>
+                                <div class="val">${member.paidRatio.toFixed(0)}%</div>
+                            </div>
+                        </div>
+                        <div class="money-bar"><span style="width: ${paidPercent.toFixed(1)}%"></span></div>
+
+                        <div class="member-projects">
+                            ${projectRows}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderMemberTable(members) {
+            const tbody = document.querySelector('#memberTable tbody');
+            if (!tbody) return;
+
+            const sorted = [...members].sort((a, b) => {
+                let valA = a[dashboardSortColumn];
+                let valB = b[dashboardSortColumn];
+
+                if (dashboardSortColumn === 'lastTouched') {
+                    valA = valA ? new Date(valA).getTime() : 0;
+                    valB = valB ? new Date(valB).getTime() : 0;
+                } else if (typeof valA === 'string' || typeof valB === 'string') {                    valA = (valA || '').toString().toLowerCase();
+                    valB = (valB || '').toString().toLowerCase();
+                }
+
+                if (valA < valB) return dashboardSortDirection === 'asc' ? -1 : 1;
+                if (valA > valB) return dashboardSortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            tbody.innerHTML = sorted.map(member => `
+                <tr>
+                    <td>${esc(member.name)}</td>
+                    <td>${member.activeCount}</td>
+                    <td>${esc(formatMillions(member.expected))}</td>
+                    <td style="color: var(--success); font-weight: 600;">${esc(formatMillions(member.earned))}</td>
+                    <td style="color: #f59e0b;">${esc(formatMillions(member.pending))}</td>
+                    <td>${member.paidRatio.toFixed(0)}%</td>
+                </tr>
+            `).join('');
+
+            document.querySelectorAll('#memberTable th').forEach(header => {
+                const indicator = header.querySelector('.sort-indicator');
+                if (!indicator) return;
+                indicator.textContent = header.getAttribute('data-sort-by') === dashboardSortColumn
+                    ? (dashboardSortDirection === 'asc' ? '▲' : '▼')
+                    : '';
+            });
+        }
+
+        function renderDashboard() {
+            const scoped = projectsForFilter(allProjects, dashboardFilter);
+            const scopeLabel = document.getElementById('dashboardScope');
+            if (scopeLabel) {
+                scopeLabel.textContent = `${DASHBOARD_FILTERS[dashboardFilter]} — ${scoped.length} of ${allProjects.length} projects`;
+            }
+
+            renderDashboardKpis(scoped);
+            lastMemberStats = computeMemberStats(scoped, PIC_LIST);
+            renderMemberCards(lastMemberStats);
+            renderMemberTable(lastMemberStats);
+        }
+
+        function setDashboardFilter(filter) {
+            dashboardFilter = filter;
+            document.querySelectorAll('#dashboardFilters .filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+            renderDashboard();
+        }
+
         // Function to fetch projects and initialize rendering/sorting
         function switchModule(moduleName) {
             document.querySelectorAll('.module-tab').forEach(tab => tab.classList.remove('active'));
@@ -642,6 +1126,10 @@
             if (moduleName === 'add') {
                 document.querySelector('.module-tab:nth-child(1)').classList.add('active');
                 document.getElementById('addModule').classList.add('active');
+            } else if (moduleName === 'dashboard') {
+                document.querySelector('.module-tab:nth-child(3)').classList.add('active');
+                document.getElementById('dashboardModule').classList.add('active');
+                renderDashboard();
             } else {
                 document.querySelector('.module-tab:nth-child(2)').classList.add('active');
                 document.getElementById('updateModule').classList.add('active');
@@ -678,7 +1166,10 @@
             form.style.display = 'block';
             document.getElementById('updateId').value = project.id;
             document.getElementById('updateTitle').value = project.title || '';
-            document.getElementById('updateCompany').value = project.company || '';
+            const companyParts = parseCompanyValue(project.company);
+            buildCompanyOptions(companyParts.type, 'update');
+            document.getElementById('updateCompanyName').value = companyParts.name;
+            handleCompanyTypeChange('update');
             document.getElementById('updateClient').value = project.client || '';
             // Populate Progress Select (the options are no longer hardcoded in the HTML)
             buildProgressOptions(project.progress || 'Not started', 'updateProgress');
@@ -803,7 +1294,7 @@
             const projectData = {
                 title: document.getElementById('updateTitle').value,
                 location: document.getElementById('updateLocation').value,
-                company: document.getElementById('updateCompany').value.trim(),
+                company: buildCompanyValue('update'),
                 client: document.getElementById('updateClient').value,
                 type: document.getElementById('updateType').value,
                 progress: document.getElementById('updateProgress').value,
@@ -883,6 +1374,10 @@
                 if (!Array.isArray(allProjects)) allProjects = [];
                 filteredProjects = [...allProjects];
                 sortAndRenderProjects(currentSortColumn, currentSortDirection);
+                // Keep the dashboard in step with the table after every add/update/delete
+                if (document.getElementById('dashboardModule').classList.contains('active')) {
+                    renderDashboard();
+                }
             } catch (error) {
                 console.error('Error fetching projects:', error);
                 showToast(`Error fetching projects: ${error.message}`, 'error');
@@ -942,6 +1437,22 @@
             });
         });
 
+        document.querySelectorAll('#dashboardFilters .filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => setDashboardFilter(btn.dataset.filter));
+        });
+
+        // Sorting for the dashboard's member table
+        document.querySelectorAll('#memberTable th').forEach(header => {
+            header.addEventListener('click', () => {
+                const column = header.getAttribute('data-sort-by');
+                if (!column) return;
+                const newDirection = (column === dashboardSortColumn && dashboardSortDirection === 'asc') ? 'desc' : 'asc';
+                dashboardSortColumn = column;
+                dashboardSortDirection = newDirection;
+                renderMemberTable(lastMemberStats);
+            });
+        });
+
         // Function to enter editing mode for a project
         function editProject(id) {
             switchModule('update');
@@ -979,7 +1490,7 @@
             const projectData = {
                 title: document.getElementById('addTitle').value,
                 location: document.getElementById('addLocation').value,
-                company: document.getElementById('addCompany').value.trim(),
+                company: buildCompanyValue('add'),
                 client: document.getElementById('addClient').value,
                 type: document.getElementById('addType').value,
                 progress: document.getElementById('addProgress').value,
@@ -1023,6 +1534,8 @@
                 buildProgressOptions('Not started');
                 document.getElementById('addCountryContainer').style.display = 'none';
                 document.getElementById('addCountry').value = '';
+                // Reset the Company dropdown (and hide the External name field)
+                buildCompanyOptions('', 'add');
                 // Re-enable PIC checkboxes (reset() keeps the disabled state from mutual exclusivity)
                 document.querySelectorAll('#addPIC input[type="checkbox"]').forEach(cb => {
                     cb.disabled = false;
@@ -1069,6 +1582,65 @@
             }
         }
 
+        // ---- Export to Excel ----
+        // The workbook is built server-side (ExcelJS) and streamed back as a download, so the
+        // page stays light and the file comes out formatted with real numbers, not text.
+        async function exportProjectsToXlsx() {
+            const button = document.getElementById('exportXlsxBtn');
+            const originalLabel = button ? button.textContent : '';
+            if (button) {
+                button.disabled = true;
+                button.textContent = 'Preparing…';
+            }
+
+            try {
+                const token = await getAccessToken();
+                if (!token) {
+                    showToast('Not logged in. Please log in again.', 'error');
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                const response = await fetch(`${API_URL}/projects/export.xlsx`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    const body = await response.json().catch(() => ({}));
+                    showToast(`Could not export: ${body.error || response.status}`, 'error');
+                    return;
+                }
+
+                // Prefer the server's file name (it carries the timestamp).
+                let filename = 'SIR-Projects.xlsx';
+                const disposition = response.headers.get('Content-Disposition') || '';
+                const match = disposition.match(/filename="?([^";]+)"?/i);
+                if (match) filename = match[1];
+
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+                showToast(`Exported ${allProjects.length} projects to ${filename}`, 'success');
+            } catch (error) {
+                console.error('Error exporting projects:', error);
+                showToast(`Could not export: ${error.message}`, 'error');
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = originalLabel;
+                }
+            }
+        }
+
+        document.getElementById('exportXlsxBtn').addEventListener('click', exportProjectsToXlsx);
+
         // Initial load of projects is triggered once the auth session is confirmed
         // (see the authentication check above).
         // Keep the token fresh while the page stays open (Supabase refreshes it ~every hour).
@@ -1088,6 +1660,7 @@
             buildLocationOptions('');
             buildTypeOptions('');
             buildProgressOptions('Not started');
+            buildCompanyOptions('', 'add');
 
             const picGroup = document.getElementById('addPIC');
             const teamGroup = document.getElementById('addTeamMembers');
