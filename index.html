@@ -155,6 +155,10 @@
                             <input type="text" id="addCountry" placeholder="e.g. Singapore">
                         </div>
                         <div>
+                            <label for="addCompany">Company:</label>
+                            <input type="text" id="addCompany">
+                        </div>
+                        <div>
                             <label for="addClient">Client:</label>
                             <input type="text" id="addClient" required>
                         </div>
@@ -234,6 +238,10 @@
                             <input type="text" id="updateCountry" placeholder="e.g. Singapore">
                         </div>
                         <div>
+                            <label for="updateCompany">Company:</label>
+                            <input type="text" id="updateCompany">
+                        </div>
+                        <div>
                             <label for="updateClient">Client:</label>
                             <input type="text" id="updateClient" required>
                         </div>
@@ -302,6 +310,7 @@
                             <th>No.</th>
                             <th data-sort-by="title" style="min-width: 150px;">Title <span class="sort-indicator"></span></th>
                             <th data-sort-by="location">Location <span class="sort-indicator"></span></th>
+                            <th data-sort-by="company">Company <span class="sort-indicator"></span></th>
                             <th data-sort-by="client">Client <span class="sort-indicator"></span></th>
                             <th data-sort-by="type">Type <span class="sort-indicator"></span></th>
                             <th data-sort-by="progress">Progress <span class="sort-indicator"></span></th>
@@ -595,6 +604,7 @@
                     <td>${index + 1}</td>
                     <td style="min-width: 200px; word-wrap: break-word; white-space: normal;">${esc(project.title)}</td>
                     <td>${esc(project.location)}</td>
+                    <td>${esc(project.company)}</td>
                     <td>${esc(project.client)}</td>
                     <td>${esc(project.type)}</td>
                     <td>${esc(project.progress)}</td>
@@ -668,6 +678,7 @@
             form.style.display = 'block';
             document.getElementById('updateId').value = project.id;
             document.getElementById('updateTitle').value = project.title || '';
+            document.getElementById('updateCompany').value = project.company || '';
             document.getElementById('updateClient').value = project.client || '';
             // Populate Progress Select (the options are no longer hardcoded in the HTML)
             buildProgressOptions(project.progress || 'Not started', 'updateProgress');
@@ -792,6 +803,7 @@
             const projectData = {
                 title: document.getElementById('updateTitle').value,
                 location: document.getElementById('updateLocation').value,
+                company: document.getElementById('updateCompany').value.trim(),
                 client: document.getElementById('updateClient').value,
                 type: document.getElementById('updateType').value,
                 progress: document.getElementById('updateProgress').value,
@@ -967,6 +979,7 @@
             const projectData = {
                 title: document.getElementById('addTitle').value,
                 location: document.getElementById('addLocation').value,
+                company: document.getElementById('addCompany').value.trim(),
                 client: document.getElementById('addClient').value,
                 type: document.getElementById('addType').value,
                 progress: document.getElementById('addProgress').value,

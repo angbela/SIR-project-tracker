@@ -94,11 +94,11 @@ app.get('/health/supabase', async (req, res) => {
 
 // Apply protection to all project routes
 app.post('/projects', protect, async (req, res) => {
-  const { title, location, client, type, progress, start_date, contract_value, payment_paid, pic, team_members, notes } = req.body;
+  const { title, location, company, client, type, progress, start_date, contract_value, payment_paid, pic, team_members, notes } = req.body;
   try {
     const { data, error } = await req.supabase
       .from('projects')
-      .insert([{ title, location, client, type, progress, start_date, contract_value, payment_paid, pic, team_members, notes }]);
+      .insert([{ title, location, company, client, type, progress, start_date, contract_value, payment_paid, pic, team_members, notes }]);
     if (error) throw error;
     res.status(201).json(data);
   } catch (error) {
@@ -122,11 +122,11 @@ app.get('/projects', protect, async (req, res) => {
 
 app.put('/projects/:id', protect, async (req, res) => {
   const { id } = req.params;
-  const { title, location, client, type, progress, start_date, contract_value, payment_paid, pic, team_members, notes } = req.body;
+  const { title, location, company, client, type, progress, start_date, contract_value, payment_paid, pic, team_members, notes } = req.body;
   try {
     const { data, error } = await req.supabase
       .from('projects')
-      .update({ title, location, client, type, progress, start_date, contract_value, payment_paid, pic, team_members, notes, modified_at: new Date() })
+      .update({ title, location, company, client, type, progress, start_date, contract_value, payment_paid, pic, team_members, notes, modified_at: new Date() })
       .match({ id });
     if (error) throw error;
     res.status(200).json(data);
