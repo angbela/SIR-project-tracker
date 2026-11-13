@@ -20,8 +20,13 @@ function workloadEsc(value) {
 
 // Builds (or rebuilds) the workload inputs in a container, one per initial in PIC_LIST.
 // `values` is the stored object: { AMF: 3, HW: 5 }.
-function buildWorkloadInputs(containerId, values) {
-  const container = document.getElementById(containerId);
+function workloadContainer(containerId, scopeId) {
+  const scope = (scopeId && document.getElementById(scopeId)) || document;
+  return scope.querySelector('#' + containerId);
+}
+
+function buildWorkloadInputs(containerId, values, scopeId) {
+  const container = workloadContainer(containerId, scopeId);
   if (!container) return;
   const stored = (workloadRulesClient() ? workloadRulesClient().sanitiseWorkload(values) : (values || {}));
   container.innerHTML = '';
@@ -60,8 +65,8 @@ function buildWorkloadInputs(containerId, values) {
 
 // Reads the inputs back: only initials with a 1-5 value are sent, so a blank box never
 // overwrites a stored value with nothing. Returns {} when nothing is set anywhere.
-function collectWorkload(containerId) {
-  const container = document.getElementById(containerId);
+function collectWorkload(containerId, scopeId) {
+  const container = workloadContainer(containerId, scopeId);
   if (!container) return {};
   const values = {};
   container.querySelectorAll('.workload-input').forEach(input => {

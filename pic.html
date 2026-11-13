@@ -215,55 +215,14 @@
             <button type="button" class="module-tab" data-module="dashboard">Dashboard</button>
         </div>
 
-        <!-- Module 1: Add Project -->
+        <!-- Module 1: Add Project: a blank form, ready to type into -->
         <div id="addModule" class="module-content active">
-        <div class="notice" id="shareNotice">
-            Team member shares are managed by an admin — updating a project never changes them.
-        </div>
+            <div class="notice" id="shareNotice">
+                Team member shares are managed by an admin — adding or updating a project never changes them.
+            </div>
 
-        <div class="toolbar">
-            <span style="color: var(--text-muted); font-size: 0.9em;">Fill in the form below to add a project.</span>
-        </div>
-
-        </div>
-
-        <!-- Module 2: Update Project (pick a project, edit it, delete it) -->
-        <div id="updateModule" class="module-content">
-        <div class="toolbar">
-            <select id="updateProjectSelect" style="max-width:420px;">
-                <option value="">Select a project to update…</option>
-            </select>
-        </div>
-
-        <div id="updateTableWrap">
-        <div class="table-responsive">
-            <table id="projectsTable">
-                <thead>
-                    <tr>
-                        <th>No.</th>
-                        <th data-sort="title">Title</th>
-                        <th data-sort="client">Client</th>
-                        <th data-sort="location">Location</th>
-                        <th data-sort="progress">Progress</th>
-                        <th data-sort="start_date">Start Date</th>
-                        <th data-sort="contract_value">Contract Value</th>
-                        <th>Payment Paid</th>
-                        <th data-sort="pic">PIC</th>
-                        <th>Workload</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Populated in script -->
-                </tbody>
-            </table>
-        </div>
-        <div class="empty-state" id="emptyState" hidden>No projects yet. Use the “Add New Project” tab to add the first one.</div>
-        </div>
-
-        <div class="card" id="editorCard" hidden>
-            <h2 id="editorTitle" style="margin-top:0;">New Project</h2>
+            <div class="card" id="addCard">
+                <h2 style="margin-top:0;">New Project</h2>
             <form id="projectForm">
                 <input type="hidden" id="projectId">
                 <div class="grid">
@@ -324,11 +283,112 @@
                 <div style="display:flex; gap:10px; margin-top:18px; align-items:center;">
                     <button type="submit" id="saveBtn">Save Project</button>
                     <button type="button" class="secondary" id="cancelEditBtn">Cancel</button>
-                    <span id="deleteWrap" hidden>
-                        <button type="button" class="danger" id="deleteBtn">Delete Project</button>
-                    </span>
                 </div>
             </form>
+            </div>
+        </div>
+
+        <!-- Module 2: Update Project: pick a project, then edit or delete it -->
+        <div id="updateModule" class="module-content">
+            <div class="toolbar">
+                <select id="updateProjectSelect" style="max-width:420px;">
+                    <option value="">Select a project to update…</option>
+                </select>
+            </div>
+
+            <div class="table-responsive">
+                <table id="projectsTable">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th data-sort="title">Title</th>
+                            <th data-sort="client">Client</th>
+                            <th data-sort="location">Location</th>
+                            <th data-sort="progress">Progress</th>
+                            <th data-sort="start_date">Start Date</th>
+                            <th data-sort="contract_value">Contract Value</th>
+                            <th>Payment Paid</th>
+                            <th data-sort="pic">PIC</th>
+                            <th>Workload</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated in script -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="empty-state" id="emptyState" hidden>No projects yet. Use the “Add New Project” tab to add the first one.</div>
+
+            <div class="card" id="updateCard" hidden>
+                <h2 style="margin-top:0;" id="updateTitle">Update Project</h2>
+            <form id="editForm">
+                <input type="hidden" id="projectId">
+                <div class="grid">
+                    <div class="full">
+                        <label for="fTitle">Project Title (as per Contract)</label>
+                        <input type="text" id="fTitle" required>
+                    </div>
+                    <div>
+                        <label for="fLocation">Location</label>
+                        <select id="fLocation"></select>
+                    </div>
+                    <div id="countryContainer" hidden>
+                        <label for="fCountry">Country</label>
+                        <input type="text" id="fCountry" placeholder="e.g. Singapore">
+                    </div>
+                    <div>
+                        <label for="fCompanyType">Company</label>
+                        <select id="fCompanyType"></select>
+                        <input type="text" id="fCompanyName" placeholder="Name of company (e.g. PT LAPI)" style="display:none; margin-top:8px;">
+                    </div>
+                    <div>
+                        <label for="fClient">Client</label>
+                        <input type="text" id="fClient" required>
+                    </div>
+                    <div>
+                        <label for="fType">Type</label>
+                        <select id="fType" required></select>
+                    </div>
+                    <div>
+                        <label for="fProgress">Progress</label>
+                        <select id="fProgress" required></select>
+                    </div>
+                    <div>
+                        <label for="fStartDate">Start Date</label>
+                        <input type="date" id="fStartDate" required>
+                    </div>
+                    <div>
+                        <label for="fContractValue">Contract Value</label>
+                        <input type="number" id="fContractValue" required>
+                    </div>
+                    <div>
+                        <label for="fPaymentPaid">Payment Paid (amount)</label>
+                        <input type="number" id="fPaymentPaid" required>
+                    </div>
+                    <div class="full">
+                        <label>PIC (Person in Charge)</label>
+                        <div id="fPicGroup" class="lock" style="display:block; padding:14px;"></div>
+                    </div>
+                    <div class="full">
+                        <label>Workload (1-5 per PIC initial)</label>
+                        <div id="fWorkload" class="workload-grid"></div>
+                    </div>
+                    <div class="full">
+                        <label for="fNotes">Notes</label>
+                        <textarea id="fNotes"></textarea>
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:18px; align-items:center;">
+                    <button type="submit" id="saveBtn">Save Project</button>
+                    <button type="button" class="secondary" id="cancelEditBtn">Cancel</button>
+                </div>
+            </form>
+                <div style="display:flex; gap:10px; margin-top:14px; align-items:center;">
+                    <button type="button" class="danger" id="updateDeleteBtn">Delete Project</button>
+                </div>
+            </div>
         </div>
 
         <!-- Module 3: Dashboard (same cards and table as the admin page, workload instead of earnings) -->
@@ -365,7 +425,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
         </div>
     </div>
 
@@ -479,8 +538,8 @@
         }
 
         // ---- form selects (same lists as the admin page) ----
-        function buildLocationOptions(selected) {
-            const select = document.getElementById('fLocation');
+        function buildLocationOptions(selected, scopeId) {
+            const select = field(scopeId, 'fLocation');
             select.innerHTML = '<option value="">Select Location</option>';
             Object.entries(LOCATION_LIST).forEach(([region, locs]) => {
                 const group = document.createElement('optgroup');
@@ -503,13 +562,13 @@
                 select.appendChild(opt);
             }
         }
-        function buildCompanyOptions(value) {
+        function buildCompanyOptions(value, scopeId) {
             // Stored as "Internal (SIR)" or "External - <name>".
             let selected = '';
             if (value === COMPANY_INTERNAL) selected = COMPANY_INTERNAL;
             else if (value) selected = COMPANY_EXTERNAL;
-            fillSelect(document.getElementById('fCompanyType'), ['', ...COMPANY_OPTIONS], selected);
-            const nameInput = document.getElementById('fCompanyName');
+            fillSelect(field(scopeId, 'fCompanyType'), ['', ...COMPANY_OPTIONS], selected);
+            const nameInput = field(scopeId, 'fCompanyName');
             if (selected === COMPANY_EXTERNAL) {
                 nameInput.value = String(value).replace(/^External\s*-\s*/, '');
                 nameInput.style.display = 'block';
@@ -518,8 +577,9 @@
                 nameInput.style.display = 'none';
             }
         }
-        function buildPicList(selected) {
-            const group = document.getElementById('fPicGroup');
+        function buildPicList(selected, scopeId) {
+            const scope = (scopeId && document.getElementById(scopeId)) || document;
+            const group = scope.querySelector('#fPicGroup');
             const pics = Array.isArray(selected) ? selected : (selected ? [selected] : []);
             group.innerHTML = PIC_LIST.map(code =>
                 `<label style="display:inline-flex; align-items:center; gap:6px; margin:0 14px 6px 0; font-weight:500; color:var(--text-color);">
@@ -527,18 +587,26 @@
                  </label>`
             ).join('');
         }
-        function readPicList() {
-            return Array.from(document.querySelectorAll('#fPicGroup input[type="checkbox"]:checked'))
+        function readPicList(scopeId) {
+            const scope = (scopeId && document.getElementById(scopeId)) || document;
+            return Array.from(scope.querySelectorAll('#fPicGroup input[type="checkbox"]:checked'))
                 .map(cb => cb.value);
         }
 
-        function handleLocationChange() {
-            const isInternational = document.getElementById('fLocation').value === 'International Project';
-            document.getElementById('countryContainer').hidden = !isInternational;
+        function handleLocationChange(scopeId, event) {
+            const scope = scopeId || (event && event.target && event.target.closest('.module-content')
+                ? event.target.closest('.module-content').id : ADD_SCOPE);
+            const location = field(scope, 'fLocation');
+            const isInternational = location && location.value === 'International Project';
+            const country = field(scope, 'countryContainer');
+            if (country) country.hidden = !isInternational;
         }
-        function handleCompanyTypeChange() {
-            const isExternal = document.getElementById('fCompanyType').value === COMPANY_EXTERNAL;
-            document.getElementById('fCompanyName').style.display = isExternal ? 'block' : 'none';
+        function handleCompanyTypeChange(scopeId, event) {
+            const scope = scopeId || (event && event.target && event.target.closest('.module-content')
+                ? event.target.closest('.module-content').id : ADD_SCOPE);
+            const type = field(scope, 'fCompanyType');
+            const name = field(scope, 'fCompanyName');
+            if (type && name) name.style.display = type.value === COMPANY_EXTERNAL ? 'block' : 'none';
         }
 
         // ---- data ----
@@ -781,97 +849,109 @@
         }
 
         // ---- editor ----
-        // A blank project form. The Add tab calls this; the Update tab uses openEditor().
-        function resetEditorForNew() {
-            document.getElementById('projectId').value = '';
-            document.getElementById('editorTitle').textContent = 'New Project';
-            document.getElementById('projectForm').reset();
-            buildLocationOptions('');
-            buildCompanyOptions('');
-            fillSelect(document.getElementById('fType'), ['', ...PROJECT_TYPES], '');
-            fillSelect(document.getElementById('fProgress'), PROGRESS_OPTIONS, 'Not started');
-            // A new project starts unassigned: the PIC account is shared by everyone, so
-            // guessing a PIC code here would put the wrong person on the project.
-            buildPicList([]);
-            buildWorkloadInputs('fWorkload', {});
-            document.getElementById('countryContainer').hidden = true;
-            document.getElementById('deleteWrap').hidden = true;
-            document.getElementById('editorCard').hidden = false;
+        // Each tab has its own copy of the form (ids are shared, but the two never show at
+        // once), so every lookup below names the tab it means: 'addModule' or 'updateModule'.
+        const ADD_SCOPE = 'addModule';
+        const UPDATE_SCOPE = 'updateModule';
+
+        function field(scopeId, id) {
+            return document.querySelector('#' + scopeId + ' #' + id);
         }
 
+        // A blank project form. The Add tab calls this; the Update tab uses openEditor().
+        function resetEditorForNew() {
+            field(ADD_SCOPE, 'projectId').value = '';
+            field(ADD_SCOPE, 'projectForm').reset();
+            buildLocationOptions('', ADD_SCOPE);
+            buildCompanyOptions('', ADD_SCOPE);
+            fillSelect(field(ADD_SCOPE, 'fType'), ['', ...PROJECT_TYPES], '');
+            fillSelect(field(ADD_SCOPE, 'fProgress'), PROGRESS_OPTIONS, 'Not started');
+            // A new project starts unassigned: the PIC account is shared by everyone, so
+            // guessing a PIC code here would put the wrong person on the project.
+            buildPicList([], ADD_SCOPE);
+            buildWorkloadInputs('fWorkload', {}, ADD_SCOPE);
+        }
+
+        // Fills the Update tab's form with one project.
         function openEditor(id) {
             const project = allProjects.find(p => String(p.id) === String(id));
             if (!project) return;
-            document.getElementById('projectId').value = project.id;
-            document.getElementById('editorTitle').textContent = `Update: ${project.title || ''}`;
-            document.getElementById('fTitle').value = project.title || '';
-            buildLocationOptions(project.location || '');
-            document.getElementById('fLocation').value = project.location || '';
+            const scope = UPDATE_SCOPE;
+            field(scope, 'projectId').value = project.id;
+            document.getElementById('updateTitle').textContent = 'Update: ' + (project.title || '(untitled)');
+            field(scope, 'fTitle').value = project.title || '';
+            buildLocationOptions(project.location || '', scope);
+            field(scope, 'fLocation').value = project.location || '';
             // "International Project (Singapore)" -> country field
             const match = /^International Project\s*\((.*)\)$/.exec(project.location || '');
-            document.getElementById('fCountry').value = match ? match[1] : '';
-            handleLocationChange();
-            buildCompanyOptions(project.company || '');
-            document.getElementById('fClient').value = project.client || '';
-            fillSelect(document.getElementById('fType'), PROJECT_TYPES, project.type || PROJECT_TYPES[0]);
-            fillSelect(document.getElementById('fProgress'), PROGRESS_OPTIONS, project.progress || 'Ongoing');
-            document.getElementById('fStartDate').value = project.start_date ? String(project.start_date).slice(0, 10) : '';
-            document.getElementById('fContractValue').value = project.contract_value ?? '';
-            document.getElementById('fPaymentPaid').value = project.payment_paid ?? '';
-            buildPicList(project.pic);
-            buildWorkloadInputs('fWorkload', project.workload);
-            document.getElementById('fNotes').value = project.notes || '';
-            document.getElementById('deleteWrap').hidden = false;
-            document.getElementById('editorCard').hidden = false;
-            document.getElementById('editorCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const country = field(scope, 'fCountry');
+            if (country) country.value = match ? match[1] : '';
+            handleLocationChange(scope);
+            buildCompanyOptions(project.company || '', scope);
+            field(scope, 'fClient').value = project.client || '';
+            fillSelect(field(scope, 'fType'), PROJECT_TYPES, project.type || PROJECT_TYPES[0]);
+            fillSelect(field(scope, 'fProgress'), PROGRESS_OPTIONS, project.progress || 'Ongoing');
+            field(scope, 'fStartDate').value = project.start_date ? String(project.start_date).slice(0, 10) : '';
+            field(scope, 'fContractValue').value = project.contract_value ?? '';
+            field(scope, 'fPaymentPaid').value = project.payment_paid ?? '';
+            buildPicList(project.pic, scope);
+            buildWorkloadInputs('fWorkload', project.workload, scope);
+            field(scope, 'fNotes').value = project.notes || '';
+            const card = document.getElementById('updateCard');
+            card.hidden = false;
+            card.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        // Keep the form's contents when moving between tabs; only Cancel/Save throw them away.
-        // closeEditor(true) also forgets the picked project.
+        // Closes the Update tab's editor and forgets the picked project.
         function closeEditor(forget) {
-            if (forget) {
-                document.getElementById('editorCard').hidden = true;
-                document.getElementById('projectForm').reset();
-                document.getElementById('projectId').value = '';
-                const select = document.getElementById('updateProjectSelect');
-                if (select) select.value = '';
-            }
+            if (!forget) return;
+            const card = document.getElementById('updateCard');
+            if (card) card.hidden = true;
+            const select = document.getElementById('updateProjectSelect');
+            if (select) select.value = '';
         }
 
-        // Every field except team_members: shares are admin-only, and the API keeps the
-        // stored shares whenever a PIC saves.
-        function formPayload() {
-            let location = document.getElementById('fLocation').value;
+
+        function formPayload(scopeId) {
+            let location = field(scopeId, 'fLocation').value;
             if (location === 'International Project') {
-                const country = document.getElementById('fCountry').value.trim();
+                const countryField = field(scopeId, 'fCountry');
+                const country = countryField ? countryField.value.trim() : '';
                 if (country) location = `International Project (${country})`;
             }
 
-            const companyChoice = document.getElementById('fCompanyType').value;
-            const companyName = document.getElementById('fCompanyName').value.trim();
+            const companyChoice = field(scopeId, 'fCompanyType').value;
+            const companyName = field(scopeId, 'fCompanyName').value.trim();
             const company = companyChoice === COMPANY_EXTERNAL && companyName
                 ? `External - ${companyName}`
                 : (companyChoice || '');
 
             return {
-                title: document.getElementById('fTitle').value,
+                title: field(scopeId, 'fTitle').value,
                 location,
                 company,
-                client: document.getElementById('fClient').value,
-                type: document.getElementById('fType').value,
-                progress: document.getElementById('fProgress').value,
-                start_date: document.getElementById('fStartDate').value,
-                contract_value: document.getElementById('fContractValue').value,
-                payment_paid: document.getElementById('fPaymentPaid').value,
-                pic: readPicList(),
-                workload: collectWorkload('fWorkload'),
-                notes: document.getElementById('fNotes').value
+                client: field(scopeId, 'fClient').value,
+                type: field(scopeId, 'fType').value,
+                progress: field(scopeId, 'fProgress').value,
+                start_date: field(scopeId, 'fStartDate').value,
+                contract_value: field(scopeId, 'fContractValue').value,
+                payment_paid: field(scopeId, 'fPaymentPaid').value,
+                pic: readPicList(scopeId),
+                workload: collectWorkload('fWorkload', scopeId),
+                notes: field(scopeId, 'fNotes').value
             };
+        }
+
+        // Which tab's editor is on screen: each tab has its own copy of the form.
+        function editorScopeId() {
+            const onUpdate = document.getElementById('updateModule');
+            return (onUpdate && onUpdate.classList.contains('active')) ? 'updateModule' : 'addModule';
         }
 
         async function saveProject(event) {
             event.preventDefault();
-            const id = document.getElementById('projectId').value;
+            const scopeId = editorScopeId();
+            const id = field(scopeId, 'projectId').value;
             const token = await getAccessToken();
             if (!token) { window.location.href = '/login.html'; return; }
 
@@ -881,7 +961,7 @@
                 const response = await fetch(id ? `${API_URL}/projects/${id}` : `${API_URL}/projects`, {
                     method: id ? 'PUT' : 'POST',
                     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-                    body: JSON.stringify(formPayload())
+                    body: JSON.stringify(formPayload(scopeId))
                 });
                 const body = await response.json().catch(() => ({}));
                 if (!response.ok) {
@@ -958,17 +1038,29 @@
                 tab.addEventListener('click', () => switchModule(tab.getAttribute('data-module')));
             });
             document.getElementById('updateProjectSelect').addEventListener('change', handleProjectPicked);
-            document.getElementById('cancelEditBtn').addEventListener('click', () => closeEditor(true));
             document.querySelectorAll('#dashboardFilters .filter-btn').forEach(btn => {
                 btn.addEventListener('click', () => setDashboardFilter(btn.dataset.filter));
             });
             document.querySelector('#memberTable thead tr').addEventListener('click', handleDashboardSort);
-            document.getElementById('projectForm').addEventListener('submit', saveProject);
-            document.getElementById('deleteBtn').addEventListener('click', () => {
-                deleteProject(document.getElementById('projectId').value);
+            closeEditor(true); // the Update tab starts with no project picked
+
+            // Both tabs' forms submit the same way; each one reads its own fields.
+            document.querySelectorAll('#addModule form, #updateModule form').forEach(form => {
+                form.addEventListener('submit', saveProject);
             });
-            document.getElementById('fLocation').addEventListener('change', handleLocationChange);
-            document.getElementById('fCompanyType').addEventListener('change', handleCompanyTypeChange);
+            // Cancel on each tab: clear that tab's form (Update also closes the card).
+            const addCancel = document.querySelector('#addModule #cancelEditBtn');
+            if (addCancel) addCancel.addEventListener('click', () => resetEditorForNew());
+            const updateCancel = document.querySelector('#updateModule #cancelEditBtn');
+            if (updateCancel) updateCancel.addEventListener('click', () => closeEditor(true));
+
+            document.getElementById('updateDeleteBtn').addEventListener('click', () => {
+                deleteProject(field(UPDATE_SCOPE, 'projectId').value);
+            });
+            document.querySelectorAll('#addModule, #updateModule').forEach(scope => {
+                scope.querySelector('#fLocation').addEventListener('change', () => handleLocationChange(scope.id));
+                scope.querySelector('#fCompanyType').addEventListener('change', () => handleCompanyTypeChange(scope.id));
+            });
             document.querySelectorAll('#projectsTable th[data-sort]').forEach(th => {
                 th.addEventListener('click', () => {
                     const key = th.getAttribute('data-sort');
