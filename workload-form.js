@@ -10,6 +10,14 @@ function workloadRulesClient() {
   return window.Workload || null;
 }
 
+// workload-form.js has no esc() of its own (the pages each define one), so it uses this.
+function workloadEsc(value) {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 // Builds (or rebuilds) the workload inputs in a container, one per initial in PIC_LIST.
 // `values` is the stored object: { AMF: 3, HW: 5 }.
 function buildWorkloadInputs(containerId, values) {
@@ -22,10 +30,10 @@ function buildWorkloadInputs(containerId, values) {
     const row = document.createElement('div');
     row.className = 'workload-item';
     row.innerHTML = `
-      <span class="workload-initial">${esc(initial)}</span>
-      <input type="number" class="workload-input" data-initial="${esc(initial)}"
+      <span class="workload-initial">${workloadEsc(initial)}</span>
+      <input type="number" class="workload-input" data-initial="${workloadEsc(initial)}"
              min="1" max="5" step="1" inputmode="numeric" placeholder="1-5"
-             value="${value ? esc(value) : ''}">
+             value="${value ? workloadEsc(value) : ''}">
     `;
     container.appendChild(row);
   });
