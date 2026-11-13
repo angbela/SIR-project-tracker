@@ -162,7 +162,9 @@ test('pic.html exists, is PIC-only, and sends an admin back to the admin page', 
 test('pic.html can create, update and delete projects', () => {
   assert.ok(/method: id \? 'PUT' : 'POST'/.test(picHtml), 'pic.html does not create/update through POST/PUT');
   assert.ok(/method: 'DELETE'/.test(picHtml), 'pic.html cannot delete a project');
-  assert.ok(/newProjectBtn/.test(picHtml), 'pic.html has no way to add a project');
+  // The "+ New Project" button was replaced by the Add New Project tab, as on the admin page.
+  assert.ok(/data-module="add"/.test(picHtml), 'pic.html has no way to add a project');
+  assert.ok(/switchModule\(\'add\'\)|switchModule\('add'\)/.test(picHtml) || /id="addModule"/.test(picHtml), 'pic.html has no Add module');
 });
 test('pic.html never sends or edits team_members (shares are admin-only)', () => {
   const payload = picHtml.slice(picHtml.indexOf('function formPayload'), picHtml.indexOf('async function saveProject'));

@@ -68,6 +68,16 @@
             background-color: var(--input-bg); border: 1px solid var(--border-color);
             border-radius: 10px; padding: 20px; margin-bottom: 20px;
         }
+        .module-tabs { display: flex; gap: 10px; margin-bottom: 0; }
+        .module-tab {
+            padding: 12px 24px; background-color: var(--bg-color); border: 1px solid var(--border-color);
+            border-bottom: none; border-radius: 8px 8px 0 0; cursor: pointer; font-weight: 600; color: var(--text-muted);
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .module-tab:hover { background-color: #1e293b; color: var(--text-color); }
+        .module-tab.active { background-color: var(--container-bg); color: var(--primary); border-top: 3px solid var(--primary); }
+        .module-content { display: none; }
+        .module-content.active { display: block; }
         .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px; }
         .toolbar input[type="text"] { max-width: 380px; }
         .notice {
@@ -105,6 +115,73 @@
             color: var(--text-muted); border: 1px dashed var(--border-color);
             border-radius: 6px; padding: 8px 12px;
         }
+        /* ---- Dashboard (identical to the admin page: one block of CSS, copied verbatim) ---- */
+        .kpi-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .kpi-card { background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 10px; padding: 18px 20px; }
+        .kpi-label { font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 600; margin-bottom: 8px; }
+        .kpi-value { font-size: 1.6em; font-weight: 700; color: #f8fafc; line-height: 1.2; }
+        .kpi-sub { font-size: 0.8em; color: var(--text-muted); margin-top: 6px; }
+
+        .dashboard-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
+        .filter-group { display: flex; gap: 8px; }
+        .filter-btn {
+            background-color: var(--input-bg); color: var(--text-muted); border: 1px solid var(--border-color);
+            padding: 8px 16px; border-radius: 6px; font-size: 0.9em; font-weight: 500;
+        }
+        .filter-btn:hover { background-color: #1e293b; color: var(--text-color); }
+        .filter-btn.active { background-color: var(--primary); border-color: var(--primary); color: white; }
+
+        .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
+        .member-card {
+            background-color: var(--input-bg); border: 1px solid var(--border-color); border-radius: 10px;
+            padding: 18px; display: flex; flex-direction: column; gap: 14px;
+        }
+        .member-card.is-pic { border-color: var(--primary); }
+        .member-head { display: flex; align-items: center; gap: 12px; }
+        .member-avatar {
+            width: 42px; height: 42px; border-radius: 50%; background-color: var(--primary);
+            display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.95em;
+            color: white; flex-shrink: 0;
+        }
+        .member-avatar.low { background-color: var(--danger); }
+        .member-name { font-weight: 600; font-size: 1.05em; color: #f8fafc; }
+        .member-meta { font-size: 0.78em; color: var(--text-muted); }
+        .member-badges { margin-left: auto; display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+        .badge {
+            font-size: 0.7em; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+            background-color: var(--border-color); color: var(--text-color); white-space: nowrap;
+        }
+        .badge.pic { background-color: var(--primary); color: white; }
+        .badge.warn { background-color: var(--danger); color: white; }
+        .badge.ok { background-color: var(--success); color: white; }
+
+        .money-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .money-item { background-color: rgba(255,255,255,0.03); border-radius: 6px; padding: 8px 10px; }
+        .money-item .lbl { font-size: 0.7em; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+        .money-item .val { font-size: 1em; font-weight: 600; color: var(--text-color); }
+        .money-item .val.earned { color: var(--success); }
+        .money-item .val.pending { color: #f59e0b; }
+        .money-bar { height: 6px; border-radius: 3px; background-color: var(--border-color); overflow: hidden; }
+        .money-bar > span { display: block; height: 100%; background-color: var(--success); }
+
+        .member-projects { display: flex; flex-direction: column; gap: 6px; }
+        .member-projects .empty { font-size: 0.82em; color: var(--text-muted); font-style: italic; }
+        .mini-project {
+            display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px;
+            background-color: rgba(255,255,255,0.04);
+            font-size: 0.82em;
+        }
+        .mini-project .title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-color); }
+        .mini-project .share { color: var(--text-muted); font-weight: 600; flex-shrink: 0; }
+        .progress-chip { font-size: 0.68em; font-weight: 700; padding: 2px 7px; border-radius: 999px; flex-shrink: 0; white-space: nowrap; }
+        .progress-chip[data-progress="Ongoing"] { background-color: #1d4ed8; color: white; }
+        .progress-chip[data-progress="Finishing"] { background-color: #7c3aed; color: white; }
+        .progress-chip[data-progress="Completed"] { background-color: #15803d; color: white; }
+        .progress-chip[data-progress="On hold"] { background-color: #b45309; color: white; }
+        .progress-chip[data-progress="Not started"] { background-color: var(--border-color); color: var(--text-color); }
+        .section-subtitle { font-size: 0.85em; color: var(--text-muted); font-weight: 400; margin-top: 4px; }
+        #memberTable td, #memberTable th { font-size: 0.86em; }
+
         #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast {
             background-color: var(--container-bg); color: var(--text-color); padding: 15px 25px;
@@ -132,13 +209,57 @@
             </div>
         </div>
 
+        <div class="module-tabs">
+            <button type="button" class="module-tab active" data-module="add">Add New Project</button>
+            <button type="button" class="module-tab" data-module="update">Update Project</button>
+            <button type="button" class="module-tab" data-module="dashboard">Dashboard</button>
+        </div>
+
+        <!-- Module 1: Add Project -->
+        <div id="addModule" class="module-content active">
         <div class="notice" id="shareNotice">
             Team member shares are managed by an admin — updating a project never changes them.
         </div>
 
         <div class="toolbar">
-            <input type="text" id="searchInput" placeholder="Search by title, client, location, PIC…">
-            <button type="button" id="newProjectBtn">+ New Project</button>
+            <span style="color: var(--text-muted); font-size: 0.9em;">Fill in the form below to add a project.</span>
+        </div>
+
+        </div>
+
+        <!-- Module 2: Update Project (pick a project, edit it, delete it) -->
+        <div id="updateModule" class="module-content">
+        <div class="toolbar">
+            <select id="updateProjectSelect" style="max-width:420px;">
+                <option value="">Select a project to update…</option>
+            </select>
+        </div>
+
+        <div id="updateTableWrap">
+        <div class="table-responsive">
+            <table id="projectsTable">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th data-sort="title">Title</th>
+                        <th data-sort="client">Client</th>
+                        <th data-sort="location">Location</th>
+                        <th data-sort="progress">Progress</th>
+                        <th data-sort="start_date">Start Date</th>
+                        <th data-sort="contract_value">Contract Value</th>
+                        <th>Payment Paid</th>
+                        <th data-sort="pic">PIC</th>
+                        <th>Workload</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Populated in script -->
+                </tbody>
+            </table>
+        </div>
+        <div class="empty-state" id="emptyState" hidden>No projects yet. Use the “Add New Project” tab to add the first one.</div>
         </div>
 
         <div class="card" id="editorCard" hidden>
@@ -210,30 +331,42 @@
             </form>
         </div>
 
-        <div class="table-responsive">
-            <table id="projectsTable">
-                <thead>
-                    <tr>
-                        <th>No.</th>
-                        <th data-sort="title">Title</th>
-                        <th data-sort="client">Client</th>
-                        <th data-sort="location">Location</th>
-                        <th data-sort="progress">Progress</th>
-                        <th data-sort="start_date">Start Date</th>
-                        <th data-sort="contract_value">Contract Value</th>
-                        <th>Payment Paid</th>
-                        <th data-sort="pic">PIC</th>
-                        <th>Workload</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Populated in script -->
-                </tbody>
-            </table>
+        <!-- Module 3: Dashboard (same cards and table as the admin page, workload instead of earnings) -->
+        <div id="dashboardModule" class="module-content">
+            <h2>Team Dashboard</h2>
+            <p class="section-subtitle">Workload = the total you have set per PIC initial on each project (1–5 points each). Active = points on projects that are not completed yet.</p>
+
+            <div class="kpi-strip" id="dashboardKpis">
+                <!-- Populated in script -->
+            </div>
+
+            <div class="dashboard-toolbar">
+                <div class="filter-group" id="dashboardFilters">
+                    <button type="button" class="filter-btn active" data-filter="all">All projects</button>
+                    <button type="button" class="filter-btn" data-filter="active">Active only</button>
+                    <button type="button" class="filter-btn" data-filter="completed">Completed only</button>
+                </div>
+                <span class="section-subtitle" id="dashboardScope"></span>
+            </div>
+
+            <div class="member-grid" id="memberGrid">
+                <!-- One card per PIC initial, populated in script -->
+            </div>
+
+            <h2 style="margin-top: 35px;">Workload by PIC</h2>
+            <p class="section-subtitle">Sorted by workload — the initials at the top of the list carry the least, so they are the ones to allocate new projects to.</p>
+            <div class="table-responsive">
+                <table id="memberTable" border="1" style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr><!-- Columns set by dashboard.js (workload mode) --></tr>
+                    </thead>
+                    <tbody>
+                        <!-- Populated in script -->
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="empty-state" id="emptyState" hidden>No projects yet. Use “+ New Project” to add the first one.</div>
+        </div>
     </div>
 
     <div id="toast-container"></div>
@@ -241,6 +374,7 @@
     <script src="roles.client.js"></script>
     <script src="workload.js"></script>
     <script src="workload-form.js"></script>
+    <script src="dashboard.js"></script>
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -296,6 +430,10 @@
             return String(value)
                 .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        // Workload mode never formats money, but dashboard.js takes a formatter for both modes.
+        function formatMillions(value) {
+            return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 2 }).format(Number(value) || 0);
         }
         function formatNumber(value) {
             return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(Number(value) || 0);
@@ -408,7 +546,12 @@
             const token = await getAccessToken();
             if (!token) { window.location.href = '/login.html'; return; }
             const response = await fetch(`${API_URL}/projects`, { headers: { Authorization: `Bearer ${token}` } });
-            if (response.status === 401) { window.location.href = '/login.html'; return; }
+            // A rejected token means the session is gone (expired, or the account was
+            // renamed): back to the login page with a reason, never a silent 401.
+            if (response.status === 401 || response.status === 403) {
+                await leaveForLogin('Your session expired — please sign in again.');
+                return;
+            }
             const body = await response.json().catch(() => ({}));
             if (!response.ok) {
                 showError(`Could not load projects: ${body.error || response.status}`);
@@ -416,10 +559,21 @@
             }
             allProjects = Array.isArray(body) ? body : [];
             renderTable();
+            if (lastModule) switchModule(lastModule, true);
+        }
+
+        // Sign out cleanly and go back to the login page with the reason shown there.
+        async function leaveForLogin(message) {
+            try {
+                if (supabaseClient) await supabaseClient.auth.signOut();
+            } catch (e) { /* the session is already unusable */ }
+            window.location.href = '/login.html?error=' + encodeURIComponent(message || 'Please sign in again.');
         }
 
         function visibleProjects() {
-            const term = document.getElementById('searchInput').value.trim().toLowerCase();
+            // The PIC page has no search box of its own; the guard keeps that from throwing.
+            const searchBox = document.getElementById('searchInput');
+            const term = searchBox ? searchBox.value.trim().toLowerCase() : '';
             let list = allProjects;
             if (term) {
                 list = list.filter(p => [p.title, p.client, p.location, p.company, p.type, formatPIC(p.pic), formatWorkloadDisplay(p.workload), p.notes]
@@ -440,10 +594,156 @@
             });
         }
 
+        // ---- tabs (same three as the admin page) ----
+        function switchModule(name, keepScroll) {
+            document.querySelectorAll('.module-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.getAttribute('data-module') === name);
+            });
+            document.querySelectorAll('.module-content').forEach(content => content.classList.remove('active'));
+            const target = document.getElementById(name + 'Module');
+            if (target) target.classList.add('active');
+            lastModule = name; // so a data refresh can redraw the same tab
+
+            if (name === 'add') {
+                resetEditorForNew();       // a blank form, ready to type into
+            } else if (name === 'update') {
+                closeEditorIfNew();        // never leave a half-typed new project here
+                renderProjectPicker();
+            } else if (name === 'dashboard') {
+                renderDashboard();
+            }
+        }
+
+        // ---- Update tab: pick a project from a list, then edit or delete it ----
+        function renderProjectPicker() {
+            const select = document.getElementById('updateProjectSelect');
+            if (!select) return;
+            const current = select.value;
+            const sorted = [...allProjects].sort((a, b) =>
+                String(a.title || '').localeCompare(String(b.title || '')));
+            select.innerHTML = '<option value="">Select a project to update…</option>' + sorted.map(project =>
+                `<option value="${esc(project.id)}">${esc(project.title || '(untitled)')}</option>`
+            ).join('');
+            // keep the pick if that project still exists
+            if (current && allProjects.some(p => String(p.id) === String(current))) {
+                select.value = current;
+            } else {
+                closeEditor(true);
+            }
+            const wrap = document.getElementById('updateTableWrap');
+            if (wrap) wrap.hidden = allProjects.length === 0;
+        }
+
+        // Picking a project opens it in the editor below the list.
+        function handleProjectPicked() {
+            const id = document.getElementById('updateProjectSelect').value;
+            if (!id) { closeEditor(true); return; }
+            openEditor(id);
+        }
+
+        // Leaving the Add tab with an empty form should close it rather than warn about work.
+        function closeEditorIfNew() {
+            const id = document.getElementById('projectId').value;
+            if (!id) closeEditor(true);
+            else closeEditor();
+        }
+
+        // ---- dashboard (workload mode: the same cards and table as the admin page) ----
+        let dashboardFilter = 'all';
+        let dashboardSortColumn = 'workloadTotal';
+        let dashboardSortDirection = 'asc'; // lowest workload first: that is the allocation view
+        let lastMemberStats = [];
+
+        // The tab the page is on: it opens on Add, and a refresh keeps whatever is showing.
+        let lastModule = 'add';
+        let initialModule = 'add';
+
+        function renderDashboardKpis(projects) {
+            const container = document.getElementById('dashboardKpis');
+            if (!container) return;
+
+            const totals = projects.reduce((acc, project) => {
+                const workload = window.Dashboard.membersOnProject(project, 'workload');
+                Object.values(workload).forEach(points => {
+                    acc.points += points;
+                    if (window.Dashboard.isActiveProject(project)) acc.activePoints += points;
+                    else acc.completedPoints += points;
+                });
+                if (window.Dashboard.isActiveProject(project)) acc.active++;
+                return acc;
+            }, { points: 0, activePoints: 0, completedPoints: 0, active: 0 });
+
+            const unset = projects.filter(project => !Object.keys(window.Dashboard.membersOnProject(project, 'workload')).length).length;
+            const people = new Set();
+            projects.forEach(project => {
+                Object.keys(window.Dashboard.membersOnProject(project, 'workload')).forEach(name => people.add(name));
+            });
+
+            const kpis = [
+                { label: 'Total Workload', value: String(totals.points), sub: `${people.size} PIC initials with workload` },
+                { label: 'Active Workload', value: String(totals.activePoints), sub: `on ${totals.active} active project${totals.active === 1 ? '' : 's'}` },
+                { label: 'Completed Workload', value: String(totals.completedPoints), sub: 'on projects marked Completed' },
+                { label: 'Projects', value: String(projects.length), sub: unset ? `${unset} with no workload set` : 'all have workload set' }
+            ];
+
+            container.innerHTML = kpis.map(kpi => `
+                <div class="kpi-card">
+                    <div class="kpi-label">${esc(kpi.label)}</div>
+                    <div class="kpi-value">${esc(kpi.value)}</div>
+                    <div class="kpi-sub">${esc(kpi.sub)}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderDashboard() {
+            const scoped = window.Dashboard.projectsForFilter(allProjects, dashboardFilter);
+            const scopeLabel = document.getElementById('dashboardScope');
+            if (scopeLabel) {
+                scopeLabel.textContent = `${window.Dashboard.FILTERS[dashboardFilter]} — ${scoped.length} of ${allProjects.length} projects`;
+            }
+
+            renderDashboardKpis(scoped);
+            // The cards and the table read the same list, sorted the same way, so the top
+            // card is always the top row.
+            const stats = window.Dashboard.computeMemberStats(scoped, PIC_LIST, 'workload');
+            lastMemberStats = window.Dashboard.sortMembers(stats, dashboardSortColumn, dashboardSortDirection);
+            window.Dashboard.renderCards(document.getElementById('memberGrid'), lastMemberStats, 'workload', formatMillions, true);
+
+            const theadRow = document.querySelector('#memberTable thead tr');
+            window.Dashboard.renderTableHeader(theadRow, 'workload');
+            window.Dashboard.renderTableBody(
+                document.querySelector('#memberTable tbody'), lastMemberStats, 'workload',
+                dashboardSortColumn, dashboardSortDirection, formatMillions
+            );
+            window.Dashboard.renderSortIndicators(theadRow, dashboardSortColumn, dashboardSortDirection);
+        }
+
+        function setDashboardFilter(filter) {
+            dashboardFilter = filter;
+            document.querySelectorAll('#dashboardFilters .filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+            renderDashboard();
+        }
+
+        function handleDashboardSort(event) {
+            const header = event.target.closest('th[data-sort-by]');
+            if (!header) return;
+            const key = header.getAttribute('data-sort-by');
+            if (dashboardSortColumn === key) {
+                dashboardSortDirection = dashboardSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                dashboardSortColumn = key;
+                dashboardSortDirection = 'asc';
+            }
+            renderDashboard();
+        }
+
         function renderTable() {
             const tbody = document.querySelector('#projectsTable tbody');
             const list = visibleProjects();
             document.getElementById('emptyState').hidden = allProjects.length > 0;
+            renderProjectPicker();
             tbody.innerHTML = list.map((project, index) => {
                 const contract = Number(project.contract_value) || 0;
                 const paid = Number(project.payment_paid) || 0;
@@ -481,7 +781,8 @@
         }
 
         // ---- editor ----
-        function openNewProject() {
+        // A blank project form. The Add tab calls this; the Update tab uses openEditor().
+        function resetEditorForNew() {
             document.getElementById('projectId').value = '';
             document.getElementById('editorTitle').textContent = 'New Project';
             document.getElementById('projectForm').reset();
@@ -496,7 +797,6 @@
             document.getElementById('countryContainer').hidden = true;
             document.getElementById('deleteWrap').hidden = true;
             document.getElementById('editorCard').hidden = false;
-            document.getElementById('editorCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function openEditor(id) {
@@ -526,10 +826,16 @@
             document.getElementById('editorCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        function closeEditor() {
-            document.getElementById('editorCard').hidden = true;
-            document.getElementById('projectForm').reset();
-            document.getElementById('projectId').value = '';
+        // Keep the form's contents when moving between tabs; only Cancel/Save throw them away.
+        // closeEditor(true) also forgets the picked project.
+        function closeEditor(forget) {
+            if (forget) {
+                document.getElementById('editorCard').hidden = true;
+                document.getElementById('projectForm').reset();
+                document.getElementById('projectId').value = '';
+                const select = document.getElementById('updateProjectSelect');
+                if (select) select.value = '';
+            }
         }
 
         // Every field except team_members: shares are admin-only, and the API keeps the
@@ -583,7 +889,7 @@
                     return;
                 }
                 showToast(id ? 'Project updated.' : 'Project added.', 'success');
-                closeEditor();
+                closeEditor(true);
                 fetchProjects();
             } catch (err) {
                 showError(`Could not save: ${err.message}`);
@@ -610,7 +916,7 @@
                     return;
                 }
                 showToast('Project deleted.', 'success');
-                if (document.getElementById('projectId').value === String(id)) closeEditor();
+                if (document.getElementById('projectId').value === String(id)) closeEditor(true);
                 fetchProjects();
             } catch (err) {
                 showError(`Could not delete: ${err.message}`);
@@ -648,15 +954,21 @@
             document.getElementById('user-email').textContent = me.email;
             document.getElementById('role-chip').textContent = 'PIC';
 
-            document.getElementById('newProjectBtn').addEventListener('click', openNewProject);
-            document.getElementById('cancelEditBtn').addEventListener('click', closeEditor);
+            document.querySelectorAll('.module-tab').forEach(tab => {
+                tab.addEventListener('click', () => switchModule(tab.getAttribute('data-module')));
+            });
+            document.getElementById('updateProjectSelect').addEventListener('change', handleProjectPicked);
+            document.getElementById('cancelEditBtn').addEventListener('click', () => closeEditor(true));
+            document.querySelectorAll('#dashboardFilters .filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => setDashboardFilter(btn.dataset.filter));
+            });
+            document.querySelector('#memberTable thead tr').addEventListener('click', handleDashboardSort);
             document.getElementById('projectForm').addEventListener('submit', saveProject);
             document.getElementById('deleteBtn').addEventListener('click', () => {
                 deleteProject(document.getElementById('projectId').value);
             });
             document.getElementById('fLocation').addEventListener('change', handleLocationChange);
             document.getElementById('fCompanyType').addEventListener('change', handleCompanyTypeChange);
-            document.getElementById('searchInput').addEventListener('input', renderTable);
             document.querySelectorAll('#projectsTable th[data-sort]').forEach(th => {
                 th.addEventListener('click', () => {
                     const key = th.getAttribute('data-sort');
@@ -670,6 +982,9 @@
                 window.location.href = '/login.html';
             });
 
+            // the page opens on the Add tab with a blank form, like the admin page
+            resetEditorForNew();
+            switchModule(initialModule);
             fetchProjects();
         })();
     </script>

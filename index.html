@@ -486,6 +486,7 @@
     <script src="roles.client.js"></script>
     <script src="workload.js"></script>
     <script src="workload-form.js"></script>
+    <script src="dashboard.js"></script>
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -869,116 +870,21 @@
         //   earned   = payment_paid   * share%   -> the same share of what the client has paid
         // Project progress is deliberately NOT part of the money: it tracks the project's own
         // state. A PIC always counts as a member with at least 1%, so they are never invisible.
-        const DASHBOARD_FILTERS = { all: 'All projects', active: 'Active only', completed: 'Completed only' };
         let dashboardFilter = 'all';
         let dashboardSortColumn = 'earned';
         let dashboardSortDirection = 'asc'; // ascending: lowest earners first, that is the allocation view
         let lastMemberStats = [];
 
-        // True when a project still counts as work in progress (anything but Completed).
-        function isActiveProject(project) {
-            return (project.progress || '') !== 'Completed';
-        }
-
-        // The PIC is a member too, even when they were left out of team_members.
-        // A PIC with no explicit share gets 1% so they show up (never 0).
-        function getMemberShares(project) {
-            let team = project.team_members || {};
-            if (typeof team === 'string') {
-                try {
-                    team = JSON.parse(team);
-                } catch (e) {
-                    team = {};
-                }
-            }
-            if (typeof team !== 'object' || team === null) team = {};
-
-            const shares = {};
-            Object.entries(team).forEach(([name, fee]) => {
-                shares[name] = parseFloat(fee) || 0;
-            });
-
-            let pics = project.pic || [];
-            if (typeof pics === 'string') pics = [pics];
-            pics.forEach(name => {
-                if (!name) return;
-                if (shares[name] === undefined) shares[name] = 1;
-            });
-
-            return shares;
-        }
-
-        // One row per member of PIC_LIST, plus anyone who appears in a project but is not
-        // in PIC_LIST (so no work is ever lost from the numbers).
+        // The dashboard itself lives in dashboard.js, shared with the PIC page:
+        //   money mode    -> Expected / Earned / Pending per member share (this page)
+        //   workload mode -> workload points per member (the PIC page)
+        // One definition for both pages, so the cards and the table cannot drift apart.
+        const DASHBOARD_FILTERS = window.Dashboard.FILTERS;
+        const isActiveProject = window.Dashboard.isActiveProject;
+        const getMemberShares = window.Dashboard.getMemberShares;
+        const projectsForFilter = window.Dashboard.projectsForFilter;
         function computeMemberStats(projects, memberList) {
-            const names = (memberList || []).slice();
-            projects.forEach(project => {
-                Object.keys(getMemberShares(project)).forEach(name => {
-                    if (name && !names.includes(name)) names.push(name);
-                });
-            });
-
-            const stats = {};
-            names.forEach(name => {
-                stats[name] = {
-                    name,
-                    expected: 0,
-                    earned: 0,
-                    pending: 0,
-                    paidRatio: 0,
-                    activeCount: 0,
-                    completedCount: 0,
-                    picCount: 0,
-                    lastTouched: null,
-                    projects: []
-                };
-            });
-
-            projects.forEach(project => {
-                const shares = getMemberShares(project);
-                const contractValue = parseFloat(project.contract_value) || 0;
-                const paidValue = parseFloat(project.payment_paid) || 0;
-                let pics = project.pic || [];
-                if (typeof pics === 'string') pics = [pics];
-                const touched = project.modified_at || project.created_at || null;
-                const active = isActiveProject(project);
-
-                Object.entries(shares).forEach(([name, share]) => {
-                    const member = stats[name];
-                    if (!member) return;
-
-                    const expected = contractValue * share / 100;
-                    const earned = paidValue * share / 100;
-
-                    member.expected += expected;
-                    member.earned += earned;
-                    if (active) member.activeCount++; else member.completedCount++;
-                    if (pics.includes(name)) member.picCount++;
-                    if (touched && (!member.lastTouched || new Date(touched) > new Date(member.lastTouched))) {
-                        member.lastTouched = touched;
-                    }
-                    member.projects.push({
-                        id: project.id,
-                        title: project.title,
-                        progress: project.progress,
-                        share,
-                        expected,
-                        earned,
-                        active
-                    });
-                });
-            });
-
-            return Object.values(stats).map(member => {
-                member.pending = member.expected - member.earned;
-                member.paidRatio = member.expected > 0 ? (member.earned / member.expected) * 100 : 0;
-                // Active work first, then the rest by how much is still to come in.
-                member.projects.sort((a, b) => {
-                    if (a.active !== b.active) return a.active ? -1 : 1;
-                    return b.pending - a.pending;
-                });
-                return member;
-            });
+            return window.Dashboard.computeMemberStats(projects, memberList, 'money');
         }
 
         // Rp 1.250.000.000 -> "Rp 1,25 M"; keeps small numbers readable in the cards.
@@ -991,12 +897,6 @@
                 maximumFractionDigits: decimals
             });
             return `Rp ${text} M`;
-        }
-
-        function projectsForFilter(projects, filter) {
-            if (filter === 'active') return projects.filter(isActiveProject);
-            if (filter === 'completed') return projects.filter(p => !isActiveProject(p));
-            return projects;
         }
 
         function renderDashboardKpis(projects) {
@@ -1036,112 +936,17 @@
             `).join('');
         }
 
+        // The cards and the summary table are drawn by dashboard.js in money mode.
         function renderMemberCards(members) {
-            const grid = document.getElementById('memberGrid');
-            if (!grid) return;
-
-            if (!members.length) {
-                grid.innerHTML = '<div class="member-projects"><span class="empty">No members to show.</span></div>';
-                return;
-            }
-
-            // Lowest earners first: they are the ones to allocate new projects to.
-            const ordered = [...members].sort((a, b) => a.earned - b.earned);
-
-            grid.innerHTML = ordered.map(member => {
-                const paidPercent = Math.min(100, Math.max(0, member.paidRatio));
-                const activeProjects = member.projects.filter(p => p.active);
-                const shownProjects = activeProjects.length ? activeProjects : member.projects;
-                const projectRows = shownProjects.length
-                    ? shownProjects.map(project => `
-                        <div class="mini-project" title="${esc(project.title)}">
-                            <span class="title">${esc(project.title || '(untitled)')}</span>
-                            <span class="progress-chip" data-progress="${esc(project.progress || '')}">${esc(project.progress || '-')}</span>
-                            <span class="share">${esc(String(project.share))}%</span>
-                        </div>
-                    `).join('')
-                    : '<span class="empty">No projects yet — good candidate for the next allocation.</span>';
-
-                return `
-                    <div class="member-card${member.picCount > 0 ? ' is-pic' : ''}">
-                        <div class="member-head">
-                            <div class="member-avatar${member.earned === 0 ? ' low' : ''}">${esc(member.name.slice(0, 3))}</div>
-                            <div>
-                                <div class="member-name">${esc(member.name)}</div>
-                                <div class="member-meta">${member.activeCount} active &middot; ${member.completedCount} completed</div>
-                            </div>
-                            <div class="member-badges">
-                                ${member.picCount > 0 ? `<span class="badge pic">PIC ×${member.picCount}</span>` : ''}
-                                ${member.earned === 0 ? '<span class="badge warn">No earnings yet</span>' : ''}
-                            </div>
-                        </div>
-
-                        <div class="money-grid">
-                            <div class="money-item">
-                                <div class="lbl">Earned</div>
-                                <div class="val earned">${esc(formatMillions(member.earned))}</div>
-                            </div>
-                            <div class="money-item">
-                                <div class="lbl">Pending</div>
-                                <div class="val pending">${esc(formatMillions(member.pending))}</div>
-                            </div>
-                            <div class="money-item">
-                                <div class="lbl">Expected</div>
-                                <div class="val">${esc(formatMillions(member.expected))}</div>
-                            </div>
-                            <div class="money-item">
-                                <div class="lbl">Paid so far</div>
-                                <div class="val">${member.paidRatio.toFixed(0)}%</div>
-                            </div>
-                        </div>
-                        <div class="money-bar"><span style="width: ${paidPercent.toFixed(1)}%"></span></div>
-
-                        <div class="member-projects">
-                            ${projectRows}
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            window.Dashboard.renderCards(document.getElementById('memberGrid'), members, 'money', formatMillions);
         }
 
         function renderMemberTable(members) {
-            const tbody = document.querySelector('#memberTable tbody');
-            if (!tbody) return;
-
-            const sorted = [...members].sort((a, b) => {
-                let valA = a[dashboardSortColumn];
-                let valB = b[dashboardSortColumn];
-
-                if (dashboardSortColumn === 'lastTouched') {
-                    valA = valA ? new Date(valA).getTime() : 0;
-                    valB = valB ? new Date(valB).getTime() : 0;
-                } else if (typeof valA === 'string' || typeof valB === 'string') {                    valA = (valA || '').toString().toLowerCase();
-                    valB = (valB || '').toString().toLowerCase();
-                }
-
-                if (valA < valB) return dashboardSortDirection === 'asc' ? -1 : 1;
-                if (valA > valB) return dashboardSortDirection === 'asc' ? 1 : -1;
-                return 0;
-            });
-
-            tbody.innerHTML = sorted.map(member => `
-                <tr>
-                    <td>${esc(member.name)}</td>
-                    <td>${member.activeCount}</td>
-                    <td>${esc(formatMillions(member.expected))}</td>
-                    <td style="color: var(--success); font-weight: 600;">${esc(formatMillions(member.earned))}</td>
-                    <td style="color: #f59e0b;">${esc(formatMillions(member.pending))}</td>
-                    <td>${member.paidRatio.toFixed(0)}%</td>
-                </tr>
-            `).join('');
-
-            document.querySelectorAll('#memberTable th').forEach(header => {
-                const indicator = header.querySelector('.sort-indicator');
-                if (!indicator) return;
-                indicator.textContent = header.getAttribute('data-sort-by') === dashboardSortColumn
-                    ? (dashboardSortDirection === 'asc' ? '▲' : '▼')
-                    : '';
-            });
+            window.Dashboard.renderTableBody(
+                document.querySelector('#memberTable tbody'), members, 'money',
+                dashboardSortColumn, dashboardSortDirection, formatMillions
+            );
+            window.Dashboard.renderSortIndicators(document.querySelector('#memberTable thead tr'), dashboardSortColumn, dashboardSortDirection);
         }
 
         function renderDashboard() {

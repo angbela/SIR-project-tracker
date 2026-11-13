@@ -30,12 +30,20 @@ const source = ['esc', 'formatTeamDisplay', 'formatPICDisplay', 'formatNumber']
 
 const helpers = new Function(`${source}; return { esc, formatTeamDisplay, formatPICDisplay, formatNumber };`)();
 
-// The dashboard's money model. Pure functions, so they can be checked without a DOM.
-const dashboardSource = ['isActiveProject', 'getMemberShares', 'computeMemberStats', 'formatMillions', 'projectsForFilter']
-  .map(extractFunction)
-  .join('\n');
+// formatMillions stays in the page (it is what the cards show).
+const formatMillions = new Function(`${extractFunction('formatMillions')}; return formatMillions;`)();
 
-const dashboard = new Function(`${dashboardSource}; return { isActiveProject, getMemberShares, computeMemberStats, formatMillions, projectsForFilter };`)();
+// The dashboard's money model moved to dashboard.js, shared with the PIC page. Pure
+// functions, so they can be checked without a DOM. The page itself only asks for money
+// mode; workload mode is covered in test/dashboard.test.js.
+const Dashboard = require(path.join(__dirname, '..', 'dashboard.js'));
+const dashboard = {
+  isActiveProject: Dashboard.isActiveProject,
+  getMemberShares: Dashboard.getMemberShares,
+  projectsForFilter: Dashboard.projectsForFilter,
+  computeMemberStats: (projects, members) => Dashboard.computeMemberStats(projects, members, 'money'),
+  formatMillions
+};
 
 const MEMBERS = ['AMF', 'MDS', 'RS'];
 const byName = (list, name) => list.find(m => m.name === name);
