@@ -2,8 +2,8 @@
 const fs = require('fs');
 const path = require('path').join(__dirname, '..') + '/'; // repo root
 const sandbox = { window: {} };
-// window.Workload comes from workload.client.js
-new Function('window', fs.readFileSync(path + 'workload.client.js', 'utf8'))(sandbox.window);
+// window.Workload comes from workload.js - the same file the server serves at /workload.js
+new Function('window', 'module', fs.readFileSync(path + 'workload.js', 'utf8'))(sandbox.window, undefined);
 
 // --- a very small DOM: enough for createElement/appendChild/querySelectorAll/innerHTML ---
 const nodes = {};

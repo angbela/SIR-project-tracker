@@ -58,10 +58,12 @@ test('formats as "initial value" pairs', () => {
   assert.strictEqual(workload.formatWorkload(null), '');
 });
 
-console.log('workload: browser copy');
-test('workload.client.js behaves exactly like the server module', () => {
+console.log('workload: served to the browser');
+test('the file served at /workload.js is the one server.js requires', () => {
+  // One copy of the rules: the route must not point at some other file.
+  assert.ok(/sendFile\(path\.join\(__dirname, 'workload\.js'\)\)/.test(read('server.js')), 'server.js does not serve workload.js at /workload.js');
   const sandbox = {};
-  new Function('window', read('workload.client.js'))(sandbox);
+  new Function('window', 'module', read('workload.js'))(sandbox, undefined);
   const client = sandbox.Workload;
   const samples = [
     { AMF: 3, HW: 5 }, { AMF: '3', MDS: '' }, { AdF: 7, FPB: 3.5 }, {}, null, '{"RS":2}'

@@ -59,11 +59,12 @@ app.get('/roles.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'roles.client.js'));
 });
 
-// The workload (1–5 per initial) rules, same idea: one browser copy, no build step.
+// The workload (1–5 per initial) rules: the very same file server.js requires, served to
+// the browser. One copy of the rules, so the boxes and the API cannot disagree.
 app.get('/workload.js', (req, res) => {
   res.type('application/javascript');
   res.set('Cache-Control', 'no-cache');
-  res.sendFile(path.join(__dirname, 'workload.client.js'));
+  res.sendFile(path.join(__dirname, 'workload.js'));
 });
 
 app.use(express.static(__dirname)); // Serve static files from the current directory

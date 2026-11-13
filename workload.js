@@ -5,8 +5,10 @@
 // else is dropped rather than stored (a blank box, "abc", 7, 3.7), so the database can
 // never hold a value the UI cannot show.
 //
-// Used by server.js (on every write) and loaded by the pages, which call it to build what
-// they display and send.
+// This is the ONLY copy of the rules. server.js requires this file, and GET /workload.js
+// serves this same file to the browser (see the route in server.js), so the boxes and the
+// API cannot drift apart. That is why the exports are declared the way they are: one line
+// works in both Node and a browser.
 
 const WORKLOAD_MIN = 1;
 const WORKLOAD_MAX = 5;
@@ -65,7 +67,7 @@ function formatWorkload(value) {
   return Object.entries(parsed).map(([initial, level]) => `${initial} ${level}`).join(', ');
 }
 
-module.exports = {
+const workloadRules = {
   WORKLOAD_MIN,
   WORKLOAD_MAX,
   toWorkloadLevel,
@@ -74,3 +76,8 @@ module.exports = {
   workloadFromFormValues,
   formatWorkload,
 };
+
+// Node (server.js, the tests): the module above is what require() gets.
+// Browser (this file served at /workload.js): the same object on window.Workload.
+if (typeof module !== 'undefined' && module.exports) module.exports = workloadRules;
+if (typeof window !== 'undefined') window.Workload = workloadRules;
