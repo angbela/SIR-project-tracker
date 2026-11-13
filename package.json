@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "node test/helpers.test.js && node test/export.test.js",
+    "test": "node test/helpers.test.js && node test/export.test.js && node test/roles.test.js && node test/workload.test.js && node scripts/check-team-guard.js",
     "export": "node scripts/export-projects.js"
   },
   "keywords": [],

@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 
 // Minimal .env loader (no dependency): Node's --env-file does not exist on older runtimes,
 // and dotenv is not installed. Only sets keys that are not already in the environment.
@@ -23,6 +24,10 @@ try {
 }
 
 const { createClient, supabaseUrl, supabaseAnonKey } = require('./supabaseClient');
+const roles = require('./roles');
+// Workload (1–5 per initial) shares the rules the API enforces.
+const workloadRules = require('./workload');
+const { TEAM_MEMBERS_FIELD, WORKLOAD_FIELD, teamMembersForWrite, workloadForWrite } = require('./projectFields');
 const cors = require('cors');
 
 const app = express();
@@ -42,6 +47,23 @@ app.get('/config.js', (req, res) => {
       SUPABASE_ANON_KEY: supabaseAnonKey,
     })};`
   );
+});
+
+// The role rules are shipped to the browser as code (no build step, no second copy), so
+// login.html, index.html and pic.html decide roles exactly the way the API does.
+// The browser gets the role rules as a plain static file (roles.client.js), so /roles.js is
+// just that file under the name the pages have always asked for.
+app.get('/roles.js', (req, res) => {
+  res.type('application/javascript');
+  res.set('Cache-Control', 'no-cache');
+  res.sendFile(path.join(__dirname, 'roles.client.js'));
+});
+
+// The workload (1–5 per initial) rules, same idea: one browser copy, no build step.
+app.get('/workload.js', (req, res) => {
+  res.type('application/javascript');
+  res.set('Cache-Control', 'no-cache');
+  res.sendFile(path.join(__dirname, 'workload.client.js'));
 });
 
 app.use(express.static(__dirname)); // Serve static files from the current directory
@@ -75,6 +97,63 @@ async function protect(req, res, next) {
   }
 }
 
+// The `admins` table is optional: when it does not exist the lookup is treated as empty,
+// so roles still work from ADMIN_EMAILS / PIC codes alone.
+async function fetchAdminRows(supabase) {
+  try {
+    const { data, error } = await supabase.from('admins').select('email');
+    if (error) return [];
+    return data || [];
+  } catch (err) {
+    return [];
+  }
+}
+
+// Attaches req.role / req.picCode, then refuses anyone whose role is not allowed.
+// Used on every project route, so a PIC can only ever touch their own projects.
+function requireRole(...allowed) {
+  return async (req, res, next) => {
+    try {
+      const adminRows = await fetchAdminRows(req.supabase);
+      const resolved = roles.resolveRole(req.user && req.user.email, adminRows);
+      req.role = resolved.role;
+      req.picCode = resolved.picCode;
+      req.roleHome = resolved.home;
+      if (!allowed.includes(req.role)) {
+        return res.status(403).json({
+          error: `This page is for ${allowed.join(' / ')} accounts.`,
+          role: req.role,
+          picCode: req.picCode,
+          home: resolved.home,
+        });
+      }
+      next();
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  };
+}
+
+// Phase 1: index.html is the only page, so every project route is admin-only. When the PIC
+// page lands, flip roles.ADMINS to false and these become adminOrPic — nothing else changes.
+const canManageProjects = roles.ADMINS ? requireRole(roles.ROLE_ADMIN) : requireRole(roles.ROLE_ADMIN, roles.ROLE_PIC);
+const adminOnly = requireRole(roles.ROLE_ADMIN);
+
+// GET /me — who the caller is and where they belong. The pages call this on load, so a
+// PIC opening the admin page is sent to /pic.html and an admin opening /pic.html is sent
+// back to /, with no server-side redirect rules to configure.
+app.get('/me', protect, async (req, res) => {
+  const adminRows = await fetchAdminRows(req.supabase);
+  const resolved = roles.resolveRole(req.user && req.user.email, adminRows);
+  res.status(200).json({
+    email: req.user.email || null,
+    id: req.user.id || null,
+    role: resolved.role,
+    picCode: resolved.picCode,
+    home: resolved.home,
+  });
+});
+
 // Same auth check, but for the login page (which has no session yet): only confirms the
 // configured Supabase project is reachable and the anon key is accepted.
 app.get('/health/supabase', async (req, res) => {
@@ -92,13 +171,22 @@ app.get('/health/supabase', async (req, res) => {
   }
 });
 
-// Apply protection to all project routes
-app.post('/projects', protect, async (req, res) => {
-  const { title, location, company, client, type, progress, start_date, contract_value, payment_paid, pic, team_members, notes } = req.body;
+// Apply protection to all project routes.
+// Admins and PICs can both create, read, update and delete every project.
+// team_members (% shares) is admin-only — see projectFields.js; workload (1–5 per initial)
+// is open to both roles and is always cleaned before it is stored.
+app.post('/projects', protect, canManageProjects, async (req, res) => {
+  const { title, location, company, client, type, progress, start_date, contract_value, payment_paid, pic, team_members, workload, notes } = req.body;
   try {
+    // A PIC cannot set the shares on a new project either; it starts with none.
+    const team = await teamMembersForWrite(req.supabase, req.role, null, team_members);
+    const row = { title, location, company, client, type, progress, start_date, contract_value, payment_paid, pic, team_members: team[TEAM_MEMBERS_FIELD], notes };
+    // A new project has nothing to keep, so an omitted workload becomes {} not null.
+    row[WORKLOAD_FIELD] = workloadForWrite(workload) || {};
+
     const { data, error } = await req.supabase
       .from('projects')
-      .insert([{ title, location, company, client, type, progress, start_date, contract_value, payment_paid, pic, team_members, notes }]);
+      .insert([row]);
     if (error) throw error;
     res.status(201).json(data);
   } catch (error) {
@@ -106,13 +194,14 @@ app.post('/projects', protect, async (req, res) => {
   }
 });
 
-app.get('/projects', protect, async (req, res) => {
+app.get('/projects', protect, canManageProjects, async (req, res) => {
   try {
     const { data, error } = await req.supabase
       .from('projects')
       .select('*')
       .order('modified_at', { ascending: false, nullsFirst: false });
     if (error) throw error;
+    // Everyone who can manage projects (admin and PIC) sees the whole portfolio.
     res.status(200).json(data || []);
   } catch (error) {
     console.error('GET /projects failed:', error.message);
@@ -120,13 +209,22 @@ app.get('/projects', protect, async (req, res) => {
   }
 });
 
-app.put('/projects/:id', protect, async (req, res) => {
+app.put('/projects/:id', protect, canManageProjects, async (req, res) => {
   const { id } = req.params;
-  const { title, location, company, client, type, progress, start_date, contract_value, payment_paid, pic, team_members, notes } = req.body;
+  const { title, location, company, client, type, progress, start_date, contract_value, payment_paid, pic, team_members, workload, notes } = req.body;
   try {
+    // team_members is admin-only: for a PIC this comes back as the stored value.
+    const team = await teamMembersForWrite(req.supabase, req.role, id, team_members);
+    if (team.notFound) return res.status(404).json({ error: 'Project not found' });
+
+    const row = { title, location, company, client, type, progress, start_date, contract_value, payment_paid, pic, team_members: team[TEAM_MEMBERS_FIELD], notes, modified_at: new Date() };
+    // workload is open to both roles; when the body leaves it out, the stored value stays.
+    const cleanedWorkload = workloadForWrite(workload);
+    if (cleanedWorkload !== null) row[WORKLOAD_FIELD] = cleanedWorkload;
+
     const { data, error } = await req.supabase
       .from('projects')
-      .update({ title, location, company, client, type, progress, start_date, contract_value, payment_paid, pic, team_members, notes, modified_at: new Date() })
+      .update(row)
       .match({ id });
     if (error) throw error;
     res.status(200).json(data);
@@ -135,7 +233,7 @@ app.put('/projects/:id', protect, async (req, res) => {
   }
 });
 
-app.delete('/projects/:id', protect, async (req, res) => {
+app.delete('/projects/:id', protect, canManageProjects, async (req, res) => {
   const { id } = req.params;
   try {
     const { error } = await req.supabase
@@ -170,6 +268,7 @@ const EXPORT_COLUMNS = [
   { header: 'Paid %', key: 'paid_percent', width: 9, align: 'center', percent: true },
   { header: 'Outstanding', key: 'outstanding', width: 17, money: true },
   { header: 'PIC', key: 'pic', width: 16 },
+  { header: 'Workload (1-5)', key: 'workload', width: 20, wrap: true },
   { header: 'Team Members (%)', key: 'team_members', width: 34, wrap: true },
   { header: 'Notes', key: 'notes', width: 44, wrap: true },
   { header: 'Last Modified', key: 'modified_at', width: 20, align: 'center' },
@@ -231,6 +330,7 @@ function projectToRow(project, index) {
     paid_percent: contract > 0 ? paid / contract : 0,
     outstanding: contract - paid,
     pic: toList(project.pic).join(', '),
+    workload: workloadRules.formatWorkload(project.workload),
     team_members: teamText,
     notes: project.notes || '',
     modified_at: toExcelDate(project.modified_at || project.created_at),
@@ -332,7 +432,7 @@ function exportFileName() {
 
 // GET /projects/export.xlsx — the same rows the table shows, as a real workbook.
 // Registered before the static middleware so it is not shadowed by a file of that name.
-app.get('/projects/export.xlsx', protect, async (req, res) => {
+app.get('/projects/export.xlsx', protect, adminOnly, async (req, res) => {
   try {
     const { data, error } = await req.supabase
       .from('projects')

@@ -48,6 +48,14 @@
         }
         .team-member-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
         .team-member-item input[type="number"] { width: 60px; padding: 4px; }
+        /* Workload: one 1-5 box per initial, no tickbox - the box alone says who is set. */
+        .workload-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px;
+            padding: 15px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--input-bg);
+        }
+        .workload-item { display: flex; align-items: center; gap: 8px; }
+        .workload-initial { font-weight: 600; font-size: 0.85em; color: var(--text-color); min-width: 34px; }
+        .workload-item input[type="number"] { width: 62px; padding: 6px; }
         .full-width { grid-column: 1 / -1; }
         .table-responsive {
             width: 100%; overflow-x: auto; margin-top: 20px;
@@ -280,6 +288,13 @@
                         </div>
 
                         <div class="full-width">
+                            <label>Workload (1-5 per PIC initial):</label>
+                            <div id="addWorkload" class="workload-grid">
+                                <!-- Populated from PIC_LIST in script -->
+                            </div>
+                        </div>
+
+                        <div class="full-width">
                             <label for="addNotes">Notes:</label>
                             <textarea id="addNotes"></textarea>
                         </div>
@@ -366,6 +381,13 @@
                         </div>
 
                         <div class="full-width">
+                            <label>Workload (1-5 per PIC initial):</label>
+                            <div id="updateWorkload" class="workload-grid">
+                                <!-- Populated from PIC_LIST in script -->
+                            </div>
+                        </div>
+
+                        <div class="full-width">
                             <label for="updateNotes">Notes:</label>
                             <textarea id="updateNotes" rows="3" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;"></textarea>
                         </div>
@@ -442,6 +464,7 @@
                             <th data-sort-by="contract_value">Contract Value <span class="sort-indicator"></span></th>
                             <th>Payment Paid</th>
                             <th>PIC</th>
+                            <th>Workload</th>
                             <th>Team Members</th>
                             <th style="min-width: 150px;">Notes</th>
                             <th data-sort-by="modified_at">Last Modified <span class="sort-indicator"></span></th>
@@ -460,7 +483,10 @@
         </section>
     </div>
 
-    <script src="/config.js"></script>
+    <script src="roles.client.js"></script>
+    <script src="workload.js"></script>
+    <script src="workload-form.js"></script>
+    <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // Config comes from GET /config.js (server-side env vars), with the current values as fallback.
@@ -478,8 +504,9 @@
             console.error('Supabase client or createClient function not found on window.supabase in index.html.');
         }
 
-        // Authentication Check
-        (async function() {
+        // Admin-only gate. The API enforces this too (every project route is admin-only);
+        // this redirect is so a PIC who bookmarks / lands on the page they belong on.
+        (async function(){
             if (!supabaseClient) {
                 console.error('Supabase client not initialized in index.html. Redirecting to login.');
                 window.location.href = '/login.html';
@@ -488,16 +515,35 @@
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) {
                 window.location.href = '/login.html';
-            } else {
-                currentAccessToken = session.access_token; // Store the access token
-                // Display user email
-                const userEmailSpan = document.getElementById('user-email');
-                if (userEmailSpan && session.user && session.user.email) {
-                    userEmailSpan.textContent = `Logged in as: ${session.user.email}`;
-                }
-                // Now that the session is ready, load the data (avoids an unauthenticated first request)
-                fetchProjects();
+                return;
             }
+
+            // Ask who this is (GET /me), falling back to the email rules if the API is down.
+            let me = null;
+            if (typeof fetchRole === 'function') {
+                me = await fetchRole(session.access_token, session.user && session.user.email);
+            } else {
+                me = rolesFromEmail(session.user && session.user.email);
+            }
+
+            if (me.role !== 'admin') {
+                if (me.home) {
+                    window.location.href = me.home;
+                } else {
+                    await supabaseClient.auth.signOut();
+                    window.location.href = `/login.html?error=${encodeURIComponent('This page is for admins only.')}`;
+                }
+                return;
+            }
+
+            currentAccessToken = session.access_token; // Store the access token
+            // Display user email
+            const userEmailSpan = document.getElementById('user-email');
+            if (userEmailSpan && session.user && session.user.email) {
+                userEmailSpan.textContent = `Logged in as: ${session.user.email}`;
+            }
+            // Now that the session is ready, load the data (avoids an unauthenticated first request)
+            fetchProjects();
         })();
         
         // Logout functionality
@@ -794,6 +840,7 @@
                     <td>${formatNumber(contractVal)}</td>
                     <td>${formatNumber(paidVal)} (${percent}%)</td>
                     <td>${esc(formatPICDisplay(project.pic))}</td>
+                    <td>${esc(formatWorkloadDisplay(project.workload))}</td>
                     <td>${esc(formatTeamDisplay(project.team_members))}</td>
                     <td style="min-width: 200px; word-wrap: break-word; white-space: normal;" title="${esc(project.notes)}">${esc(project.notes)}</td>
                     <td>${modifiedAt ? esc(new Date(modifiedAt).toLocaleString()) : '-'}</td>
@@ -1257,6 +1304,9 @@
                 `;
                 teamGroup.appendChild(div);
             });
+            // Populate Workload (one 1-5 box per initial, the box says who is set)
+            buildWorkloadInputs('updateWorkload', project.workload);
+
         }
 
         function cancelUpdate() {
@@ -1303,6 +1353,7 @@
                 payment_paid: parseInt(document.getElementById('updatePaymentPaid').value) || 0,
                 pic,
                 team_members,
+                workload: collectWorkload('updateWorkload'),
                 notes: document.getElementById('updateNotes').value
             };
 
@@ -1499,6 +1550,7 @@
                 payment_paid: parseInt(document.getElementById('addPaymentPaid').value) || 0,
                 pic,
                 team_members,
+                workload: collectWorkload('addWorkload'),
                 notes: document.getElementById('addNotes').value
             };
 
@@ -1536,6 +1588,8 @@
                 document.getElementById('addCountry').value = '';
                 // Reset the Company dropdown (and hide the External name field)
                 buildCompanyOptions('', 'add');
+                // Clear the workload boxes as well (the custom inputs ignore form.reset())
+                buildWorkloadInputs('addWorkload', {});
                 // Re-enable PIC checkboxes (reset() keeps the disabled state from mutual exclusivity)
                 document.querySelectorAll('#addPIC input[type="checkbox"]').forEach(cb => {
                     cb.disabled = false;
@@ -1685,6 +1739,9 @@
 
             // Initialize mutual exclusivity for Add PICs
             handlePICSelection('addPIC');
+
+            // Workload: one 1-5 box per initial, ready for a new project (all blank).
+            buildWorkloadInputs('addWorkload', {});
         }
 
         initAddForm();

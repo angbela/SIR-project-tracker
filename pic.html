@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Tracker (PIC) - Project Tracker</title>
+    <link rel="icon" type="image/png" href="https://sangkurianginovasi.com/wp-content/uploads/2025/09/cropped-logo_only_bgs.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --container-bg: #1e293b;
+            --text-color: #e2e8f0;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --border-color: #334155;
+            --input-bg: #0f172a;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif; margin: 20px;
+            background-color: var(--bg-color); color: var(--text-color); line-height: 1.5;
+        }
+        .container {
+            max-width: 1300px; margin: 0 auto; background-color: var(--container-bg);
+            padding: 30px; border-radius: 12px; border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden;
+        }
+        h1, h2 { color: #f8fafc; font-weight: 600; }
+        h1 { margin: 0; font-size: 1.7em; }
+        h2 { font-size: 1.15em; }
+        .page-header {
+            display: flex; justify-content: space-between; align-items: center; gap: 15px;
+            flex-wrap: wrap; border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px; margin-bottom: 25px;
+        }
+        .page-header .who { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .role-chip {
+            font-size: 0.72em; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+            padding: 4px 10px; border-radius: 999px; background-color: var(--primary); color: white;
+        }
+        #user-email { font-weight: 500; }
+        button {
+            font-family: inherit; font-size: 0.95em; font-weight: 600; cursor: pointer;
+            padding: 10px 18px; border-radius: 6px; border: none;
+            background-color: var(--primary); color: white; transition: background-color 0.2s ease;
+        }
+        button:hover { background-color: var(--primary-hover); }
+        button.secondary { background-color: var(--border-color); color: var(--text-color); }
+        button.danger { background-color: var(--danger); }
+        button.small { padding: 6px 12px; font-size: 0.82em; }
+        button:disabled { opacity: 0.6; cursor: progress; }
+        label { display: block; font-size: 0.82em; font-weight: 600; color: var(--text-muted); margin-bottom: 6px; }
+        input[type="text"], input[type="number"], input[type="date"], select, textarea {
+            width: 100%; padding: 10px; font-family: inherit; font-size: 0.95em;
+            color: var(--text-color); background-color: var(--input-bg);
+            border: 1px solid var(--border-color); border-radius: 6px;
+        }
+        textarea { resize: vertical; min-height: 70px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .full { grid-column: 1 / -1; }
+        .card {
+            background-color: var(--input-bg); border: 1px solid var(--border-color);
+            border-radius: 10px; padding: 20px; margin-bottom: 20px;
+        }
+        .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px; }
+        .toolbar input[type="text"] { max-width: 380px; }
+        .notice {
+            font-size: 0.85em; color: var(--text-muted); background-color: rgba(245,158,11,0.12);
+            border: 1px solid rgba(245,158,11,0.35); border-radius: 8px; padding: 10px 14px; margin-bottom: 18px;
+        }
+        .table-responsive { width: 100%; overflow-x: auto; border: 1px solid var(--border-color); border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.86em; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-color); vertical-align: top; }
+        th { background-color: #172033; color: var(--text-muted); font-size: 0.78em; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap; }
+        th[data-sort] { cursor: pointer; user-select: none; }
+        tr:hover td { background-color: rgba(255,255,255,0.03); }
+        .chip {
+            font-size: 0.72em; font-weight: 700; padding: 3px 9px; border-radius: 999px;
+            background-color: var(--border-color); color: var(--text-color); white-space: nowrap;
+        }
+        .chip[data-progress="Ongoing"] { background-color: #1d4ed8; color: white; }
+        .chip[data-progress="Finishing"] { background-color: #7c3aed; color: white; }
+        .chip[data-progress="Completed"] { background-color: #15803d; color: white; }
+        .chip[data-progress="On hold"] { background-color: #b45309; color: white; }
+        .chip.stale { background-color: var(--danger); color: white; }
+        .chip.fresh { background-color: var(--success); color: white; }
+        .row-actions { display: flex; gap: 6px; white-space: nowrap; }
+        /* Workload: one 1-5 box per initial, no tickbox - the box alone says who is set. */
+        .workload-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px;
+            padding: 14px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-color);
+        }
+        .workload-item { display: flex; align-items: center; gap: 8px; }
+        .workload-initial { font-weight: 600; font-size: 0.85em; min-width: 34px; }
+        .workload-item input[type="number"] { width: 62px; padding: 6px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+        .lock {
+            display: inline-flex; align-items: center; gap: 6px; font-size: 0.78em;
+            color: var(--text-muted); border: 1px dashed var(--border-color);
+            border-radius: 6px; padding: 8px 12px;
+        }
+        #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            background-color: var(--container-bg); color: var(--text-color); padding: 15px 25px;
+            border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); border-left: 4px solid var(--primary);
+            font-weight: 500; min-width: 250px; animation: slideIn 0.3s ease-out forwards;
+            opacity: 0; transform: translateX(100%);
+        }
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--danger); }
+        @keyframes slideIn { to { opacity: 1; transform: translateX(0); } }
+        @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1>Project Tracker</h1>
+                <div style="font-size:0.85em;color:var(--text-muted);">All projects — add, update and delete. Team member % shares are managed by an admin.</div>
+            </div>
+            <div class="who">
+                <span class="role-chip" id="role-chip">PIC</span>
+                <span id="user-email"></span>
+                <button class="danger" id="logout-button">Logout</button>
+            </div>
+        </div>
+
+        <div class="notice" id="shareNotice">
+            Team member shares are managed by an admin — updating a project never changes them.
+        </div>
+
+        <div class="toolbar">
+            <input type="text" id="searchInput" placeholder="Search by title, client, location, PIC…">
+            <button type="button" id="newProjectBtn">+ New Project</button>
+        </div>
+
+        <div class="card" id="editorCard" hidden>
+            <h2 id="editorTitle" style="margin-top:0;">New Project</h2>
+            <form id="projectForm">
+                <input type="hidden" id="projectId">
+                <div class="grid">
+                    <div class="full">
+                        <label for="fTitle">Project Title (as per Contract)</label>
+                        <input type="text" id="fTitle" required>
+                    </div>
+                    <div>
+                        <label for="fLocation">Location</label>
+                        <select id="fLocation"></select>
+                    </div>
+                    <div id="countryContainer" hidden>
+                        <label for="fCountry">Country</label>
+                        <input type="text" id="fCountry" placeholder="e.g. Singapore">
+                    </div>
+                    <div>
+                        <label for="fCompanyType">Company</label>
+                        <select id="fCompanyType"></select>
+                        <input type="text" id="fCompanyName" placeholder="Name of company (e.g. PT LAPI)" style="display:none; margin-top:8px;">
+                    </div>
+                    <div>
+                        <label for="fClient">Client</label>
+                        <input type="text" id="fClient" required>
+                    </div>
+                    <div>
+                        <label for="fType">Type</label>
+                        <select id="fType" required></select>
+                    </div>
+                    <div>
+                        <label for="fProgress">Progress</label>
+                        <select id="fProgress" required></select>
+                    </div>
+                    <div>
+                        <label for="fStartDate">Start Date</label>
+                        <input type="date" id="fStartDate" required>
+                    </div>
+                    <div>
+                        <label for="fContractValue">Contract Value</label>
+                        <input type="number" id="fContractValue" required>
+                    </div>
+                    <div>
+                        <label for="fPaymentPaid">Payment Paid (amount)</label>
+                        <input type="number" id="fPaymentPaid" required>
+                    </div>
+                    <div class="full">
+                        <label>PIC (Person in Charge)</label>
+                        <div id="fPicGroup" class="lock" style="display:block; padding:14px;"></div>
+                    </div>
+                    <div class="full">
+                        <label>Workload (1-5 per PIC initial)</label>
+                        <div id="fWorkload" class="workload-grid"></div>
+                    </div>
+                    <div class="full">
+                        <label for="fNotes">Notes</label>
+                        <textarea id="fNotes"></textarea>
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:18px; align-items:center;">
+                    <button type="submit" id="saveBtn">Save Project</button>
+                    <button type="button" class="secondary" id="cancelEditBtn">Cancel</button>
+                    <span id="deleteWrap" hidden>
+                        <button type="button" class="danger" id="deleteBtn">Delete Project</button>
+                    </span>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table id="projectsTable">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th data-sort="title">Title</th>
+                        <th data-sort="client">Client</th>
+                        <th data-sort="location">Location</th>
+                        <th data-sort="progress">Progress</th>
+                        <th data-sort="start_date">Start Date</th>
+                        <th data-sort="contract_value">Contract Value</th>
+                        <th>Payment Paid</th>
+                        <th data-sort="pic">PIC</th>
+                        <th>Workload</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Populated in script -->
+                </tbody>
+            </table>
+        </div>
+        <div class="empty-state" id="emptyState" hidden>No projects yet. Use “+ New Project” to add the first one.</div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script src="roles.client.js"></script>
+    <script src="workload.js"></script>
+    <script src="workload-form.js"></script>
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ---- config (same values as index.html) ----
+        const APP_CONFIG = window.APP_CONFIG || {};
+        const SUPABASE_URL = APP_CONFIG.SUPABASE_URL || 'https://vsjupkgxrmlmiofmdkex.supabase.co';
+        const SUPABASE_ANON_KEY = APP_CONFIG.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZzanVwa2d4cm1sbWlvZm1ka2V4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4ODU4NDIsImV4cCI6MjA5MjQ2MTg0Mn0.1of0BK16kuqEetRzr_Pd6il2Fgwy0Ztw6g5960RD8XA';
+        const API_URL = window.location.hostname === 'localhost'
+            ? 'http://localhost:3001'
+            : 'https://sir-project-tracker.onrender.com';
+
+        let supabaseClient = null;
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+
+        // ---- option lists, identical to the admin page (kept in step by the tests) ----
+        const PIC_LIST = ['AMF', 'MDS', 'RS', 'AdF', 'FPB', 'WH', 'TRS', 'FR', 'AnF', 'HW', 'IFK', 'DF', 'MP', 'JBN', 'FM'];
+        const LOCATION_LIST = {
+            "Sumatra": ["Aceh", "North Sumatra", "West Sumatra", "Riau", "Riau Islands", "Jambi", "South Sumatra", "Bengkulu", "Lampung", "Bangka Belitung Islands"],
+            "Java": ["Jakarta", "Banten", "West Java", "Central Java", "Special Region of Yogyakarta", "East Java"],
+            "Bali & Nusa Tenggara": ["Bali", "West Nusa Tenggara", "East Nusa Tenggara"],
+            "Kalimantan": ["West Kalimantan", "Central Kalimantan", "South Kalimantan", "East Kalimantan", "North Kalimantan"],
+            "Sulawesi": ["North Sulawesi", "Gorontalo", "Central Sulawesi", "West Sulawesi", "South Sulawesi", "Southeast Sulawesi"],
+            "Maluku": ["Maluku", "North Maluku"],
+            "Papua": ["Papua", "West Papua", "Central Papua", "South Papua", "Papua Highlands", "Southwest Papua"],
+            "Others": ["National Project", "International Project"]
+        };
+        const PROJECT_TYPES = [
+            "Numerical Modelling", "Technical Recommendation", "Detailed Engineering and Design",
+            "Advisory Services", "Masterplan", "Physical Modelling", "Concession Study",
+            "Feasibilty Study", "Feasibility, Masterplan, and Investigative-Survey-and-Design Studies",
+            "Feasibility Study", "Investigative-Survey-and-Design",
+            "Masterplan and Work-Authority-Area-and-Interest-Authority-Area",
+            "Basic Engineering and Design", "Preliminary Feasibility Study",
+            "Investigative-Survey-and-Design for Dredging",
+            "Investigative-Survey-and-Design and Masterplan",
+            "Feasibility Study, Masterplan, Investigative-Survey-and-Design"
+        ];
+        const PROGRESS_OPTIONS = ["Not started", "Ongoing", "Finishing", "Completed", "On hold"];
+        const COMPANY_INTERNAL = 'Internal (SIR)';
+        const COMPANY_EXTERNAL = 'External';
+        const COMPANY_OPTIONS = [COMPANY_INTERNAL, COMPANY_EXTERNAL];
+
+        let me = null;
+        let allProjects = [];
+        let sortKey = 'modified_at';
+        let sortDir = 'desc';
+
+        // ---- helpers ----
+        function esc(value) {
+            if (value === null || value === undefined) return '';
+            return String(value)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        function formatNumber(value) {
+            return new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(Number(value) || 0);
+        }
+        function formatPIC(pic) {
+            if (!pic) return '';
+            return Array.isArray(pic) ? pic.join(', ') : String(pic);
+        }
+        // Team member % shares are an admin-only field: this page neither shows them nor
+        // sends them (the API keeps the stored value on every PIC save).
+        function statusOf(project) {
+            if (project.progress === 'Completed') return { text: 'Completed', cls: '' };
+            const touched = project.modified_at || project.created_at;
+            if (!touched) return { text: 'Need update', cls: 'stale' };
+            const days = Math.abs(new Date() - new Date(touched)) / (1000 * 60 * 60 * 24);
+            return days < 7 ? { text: 'Up to date', cls: 'fresh' } : { text: 'Need update', cls: 'stale' };
+        }
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+        function showError(message) {
+            showToast(message, 'error');
+        }
+        async function getAccessToken() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            return session ? session.access_token : null;
+        }
+        function fillSelect(select, values, selected) {
+            if (!select) return;
+            select.innerHTML = '';
+            values.forEach(value => {
+                const opt = document.createElement('option');
+                opt.value = value;
+                opt.textContent = value;
+                if (value === selected) opt.selected = true;
+                select.appendChild(opt);
+            });
+        }
+
+        // ---- form selects (same lists as the admin page) ----
+        function buildLocationOptions(selected) {
+            const select = document.getElementById('fLocation');
+            select.innerHTML = '<option value="">Select Location</option>';
+            Object.entries(LOCATION_LIST).forEach(([region, locs]) => {
+                const group = document.createElement('optgroup');
+                group.label = region;
+                locs.forEach(loc => {
+                    const opt = document.createElement('option');
+                    opt.value = loc;
+                    opt.textContent = loc;
+                    if (loc === selected) opt.selected = true;
+                    group.appendChild(opt);
+                });
+                select.appendChild(group);
+            });
+            // A stored location that is not in the list (an old free-text value) stays visible.
+            if (selected && !Array.from(select.options).some(o => o.value === selected)) {
+                const opt = document.createElement('option');
+                opt.value = selected;
+                opt.textContent = selected;
+                opt.selected = true;
+                select.appendChild(opt);
+            }
+        }
+        function buildCompanyOptions(value) {
+            // Stored as "Internal (SIR)" or "External - <name>".
+            let selected = '';
+            if (value === COMPANY_INTERNAL) selected = COMPANY_INTERNAL;
+            else if (value) selected = COMPANY_EXTERNAL;
+            fillSelect(document.getElementById('fCompanyType'), ['', ...COMPANY_OPTIONS], selected);
+            const nameInput = document.getElementById('fCompanyName');
+            if (selected === COMPANY_EXTERNAL) {
+                nameInput.value = String(value).replace(/^External\s*-\s*/, '');
+                nameInput.style.display = 'block';
+            } else {
+                nameInput.value = '';
+                nameInput.style.display = 'none';
+            }
+        }
+        function buildPicList(selected) {
+            const group = document.getElementById('fPicGroup');
+            const pics = Array.isArray(selected) ? selected : (selected ? [selected] : []);
+            group.innerHTML = PIC_LIST.map(code =>
+                `<label style="display:inline-flex; align-items:center; gap:6px; margin:0 14px 6px 0; font-weight:500; color:var(--text-color);">
+                    <input type="checkbox" value="${esc(code)}" ${pics.includes(code) ? 'checked' : ''}> ${esc(code)}
+                 </label>`
+            ).join('');
+        }
+        function readPicList() {
+            return Array.from(document.querySelectorAll('#fPicGroup input[type="checkbox"]:checked'))
+                .map(cb => cb.value);
+        }
+
+        function handleLocationChange() {
+            const isInternational = document.getElementById('fLocation').value === 'International Project';
+            document.getElementById('countryContainer').hidden = !isInternational;
+        }
+        function handleCompanyTypeChange() {
+            const isExternal = document.getElementById('fCompanyType').value === COMPANY_EXTERNAL;
+            document.getElementById('fCompanyName').style.display = isExternal ? 'block' : 'none';
+        }
+
+        // ---- data ----
+        async function fetchProjects() {
+            const token = await getAccessToken();
+            if (!token) { window.location.href = '/login.html'; return; }
+            const response = await fetch(`${API_URL}/projects`, { headers: { Authorization: `Bearer ${token}` } });
+            if (response.status === 401) { window.location.href = '/login.html'; return; }
+            const body = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                showError(`Could not load projects: ${body.error || response.status}`);
+                return;
+            }
+            allProjects = Array.isArray(body) ? body : [];
+            renderTable();
+        }
+
+        function visibleProjects() {
+            const term = document.getElementById('searchInput').value.trim().toLowerCase();
+            let list = allProjects;
+            if (term) {
+                list = list.filter(p => [p.title, p.client, p.location, p.company, p.type, formatPIC(p.pic), formatWorkloadDisplay(p.workload), p.notes]
+                    .some(v => String(v || '').toLowerCase().includes(term)));
+            }
+            const dir = sortDir === 'asc' ? 1 : -1;
+            return [...list].sort((a, b) => {
+                const av = a[sortKey], bv = b[sortKey];
+                if (av === bv) return 0;
+                if (av === null || av === undefined) return 1;
+                if (bv === null || bv === undefined) return -1;
+                if (sortKey === 'contract_value' || sortKey === 'start_date' || sortKey === 'modified_at') {
+                    const an = sortKey === 'contract_value' ? Number(av) || 0 : new Date(av).getTime();
+                    const bn = sortKey === 'contract_value' ? Number(bv) || 0 : new Date(bv).getTime();
+                    return (an - bn) * dir;
+                }
+                return String(av).localeCompare(String(bv)) * dir;
+            });
+        }
+
+        function renderTable() {
+            const tbody = document.querySelector('#projectsTable tbody');
+            const list = visibleProjects();
+            document.getElementById('emptyState').hidden = allProjects.length > 0;
+            tbody.innerHTML = list.map((project, index) => {
+                const contract = Number(project.contract_value) || 0;
+                const paid = Number(project.payment_paid) || 0;
+                const pct = contract > 0 ? ((paid / contract) * 100).toFixed(1) : '0.0';
+                const status = statusOf(project);
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td style="min-width:170px;">${esc(project.title)}</td>
+                        <td>${esc(project.client)}</td>
+                        <td>${esc(project.location)}</td>
+                        <td><span class="chip" data-progress="${esc(project.progress || '')}">${esc(project.progress || '-')}</span></td>
+                        <td>${project.start_date ? esc(new Date(project.start_date).toLocaleDateString()) : ''}</td>
+                        <td>${formatNumber(contract)}</td>
+                        <td>${formatNumber(paid)} (${pct}%)</td>
+                        <td>${esc(formatPIC(project.pic))}</td>
+                        <td>${esc(formatWorkloadDisplay(project.workload))}</td>
+                        <td><span class="chip ${status.cls}">${esc(status.text)}</span></td>
+                        <td>
+                            <div class="row-actions">
+                                <button type="button" class="small" data-edit="${esc(project.id)}">Edit</button>
+                                <button type="button" class="small danger" data-delete="${esc(project.id)}">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            tbody.querySelectorAll('button[data-edit]').forEach(btn => {
+                btn.addEventListener('click', () => openEditor(btn.getAttribute('data-edit')));
+            });
+            tbody.querySelectorAll('button[data-delete]').forEach(btn => {
+                btn.addEventListener('click', () => deleteProject(btn.getAttribute('data-delete')));
+            });
+        }
+
+        // ---- editor ----
+        function openNewProject() {
+            document.getElementById('projectId').value = '';
+            document.getElementById('editorTitle').textContent = 'New Project';
+            document.getElementById('projectForm').reset();
+            buildLocationOptions('');
+            buildCompanyOptions('');
+            fillSelect(document.getElementById('fType'), ['', ...PROJECT_TYPES], '');
+            fillSelect(document.getElementById('fProgress'), PROGRESS_OPTIONS, 'Not started');
+            // A new project starts unassigned: the PIC account is shared by everyone, so
+            // guessing a PIC code here would put the wrong person on the project.
+            buildPicList([]);
+            buildWorkloadInputs('fWorkload', {});
+            document.getElementById('countryContainer').hidden = true;
+            document.getElementById('deleteWrap').hidden = true;
+            document.getElementById('editorCard').hidden = false;
+            document.getElementById('editorCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function openEditor(id) {
+            const project = allProjects.find(p => String(p.id) === String(id));
+            if (!project) return;
+            document.getElementById('projectId').value = project.id;
+            document.getElementById('editorTitle').textContent = `Update: ${project.title || ''}`;
+            document.getElementById('fTitle').value = project.title || '';
+            buildLocationOptions(project.location || '');
+            document.getElementById('fLocation').value = project.location || '';
+            // "International Project (Singapore)" -> country field
+            const match = /^International Project\s*\((.*)\)$/.exec(project.location || '');
+            document.getElementById('fCountry').value = match ? match[1] : '';
+            handleLocationChange();
+            buildCompanyOptions(project.company || '');
+            document.getElementById('fClient').value = project.client || '';
+            fillSelect(document.getElementById('fType'), PROJECT_TYPES, project.type || PROJECT_TYPES[0]);
+            fillSelect(document.getElementById('fProgress'), PROGRESS_OPTIONS, project.progress || 'Ongoing');
+            document.getElementById('fStartDate').value = project.start_date ? String(project.start_date).slice(0, 10) : '';
+            document.getElementById('fContractValue').value = project.contract_value ?? '';
+            document.getElementById('fPaymentPaid').value = project.payment_paid ?? '';
+            buildPicList(project.pic);
+            buildWorkloadInputs('fWorkload', project.workload);
+            document.getElementById('fNotes').value = project.notes || '';
+            document.getElementById('deleteWrap').hidden = false;
+            document.getElementById('editorCard').hidden = false;
+            document.getElementById('editorCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function closeEditor() {
+            document.getElementById('editorCard').hidden = true;
+            document.getElementById('projectForm').reset();
+            document.getElementById('projectId').value = '';
+        }
+
+        // Every field except team_members: shares are admin-only, and the API keeps the
+        // stored shares whenever a PIC saves.
+        function formPayload() {
+            let location = document.getElementById('fLocation').value;
+            if (location === 'International Project') {
+                const country = document.getElementById('fCountry').value.trim();
+                if (country) location = `International Project (${country})`;
+            }
+
+            const companyChoice = document.getElementById('fCompanyType').value;
+            const companyName = document.getElementById('fCompanyName').value.trim();
+            const company = companyChoice === COMPANY_EXTERNAL && companyName
+                ? `External - ${companyName}`
+                : (companyChoice || '');
+
+            return {
+                title: document.getElementById('fTitle').value,
+                location,
+                company,
+                client: document.getElementById('fClient').value,
+                type: document.getElementById('fType').value,
+                progress: document.getElementById('fProgress').value,
+                start_date: document.getElementById('fStartDate').value,
+                contract_value: document.getElementById('fContractValue').value,
+                payment_paid: document.getElementById('fPaymentPaid').value,
+                pic: readPicList(),
+                workload: collectWorkload('fWorkload'),
+                notes: document.getElementById('fNotes').value
+            };
+        }
+
+        async function saveProject(event) {
+            event.preventDefault();
+            const id = document.getElementById('projectId').value;
+            const token = await getAccessToken();
+            if (!token) { window.location.href = '/login.html'; return; }
+
+            const saveButton = document.getElementById('saveBtn');
+            saveButton.disabled = true;
+            try {
+                const response = await fetch(id ? `${API_URL}/projects/${id}` : `${API_URL}/projects`, {
+                    method: id ? 'PUT' : 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify(formPayload())
+                });
+                const body = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    showError(`Could not save: ${body.error || response.status}`);
+                    return;
+                }
+                showToast(id ? 'Project updated.' : 'Project added.', 'success');
+                closeEditor();
+                fetchProjects();
+            } catch (err) {
+                showError(`Could not save: ${err.message}`);
+            } finally {
+                saveButton.disabled = false;
+            }
+        }
+
+        async function deleteProject(id) {
+            const project = allProjects.find(p => String(p.id) === String(id));
+            if (!project) return;
+            if (!confirm(`Delete "${project.title || 'this project'}"? This cannot be undone.`)) return;
+
+            const token = await getAccessToken();
+            if (!token) { window.location.href = '/login.html'; return; }
+            try {
+                const response = await fetch(`${API_URL}/projects/${id}`, {
+                    method: 'DELETE',
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (!response.ok && response.status !== 204) {
+                    const body = await response.json().catch(() => ({}));
+                    showError(`Could not delete: ${body.error || response.status}`);
+                    return;
+                }
+                showToast('Project deleted.', 'success');
+                if (document.getElementById('projectId').value === String(id)) closeEditor();
+                fetchProjects();
+            } catch (err) {
+                showError(`Could not delete: ${err.message}`);
+            }
+        }
+
+        // ---- boot ----
+        (async function init() {
+            if (!supabaseClient) {
+                window.location.href = '/login.html';
+                return;
+            }
+            if (typeof fetchRole !== 'function') {
+                document.body.insertAdjacentHTML('afterbegin',
+                    '<p style="color:var(--danger)">Could not load the role rules, so this page cannot check your access.</p>');
+                return;
+            }
+
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = '/login.html'; return; }
+            me = await fetchRole(session.access_token, session.user && session.user.email);
+
+            if (me.role !== 'pic') {
+                if (me.role === 'admin') {
+                    window.location.href = me.home || '/';
+                } else {
+                    await supabaseClient.auth.signOut();
+                    window.location.href = `/login.html?error=${encodeURIComponent('Your account has no access to the project tracker.')}`;
+                }
+                return;
+            }
+
+            // One shared PIC account, so there is no "my PIC code" to show: the header just
+            // names the account. (A project's PIC is still picked from the full list.)
+            document.getElementById('user-email').textContent = me.email;
+            document.getElementById('role-chip').textContent = 'PIC';
+
+            document.getElementById('newProjectBtn').addEventListener('click', openNewProject);
+            document.getElementById('cancelEditBtn').addEventListener('click', closeEditor);
+            document.getElementById('projectForm').addEventListener('submit', saveProject);
+            document.getElementById('deleteBtn').addEventListener('click', () => {
+                deleteProject(document.getElementById('projectId').value);
+            });
+            document.getElementById('fLocation').addEventListener('change', handleLocationChange);
+            document.getElementById('fCompanyType').addEventListener('change', handleCompanyTypeChange);
+            document.getElementById('searchInput').addEventListener('input', renderTable);
+            document.querySelectorAll('#projectsTable th[data-sort]').forEach(th => {
+                th.addEventListener('click', () => {
+                    const key = th.getAttribute('data-sort');
+                    if (sortKey === key) sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+                    else { sortKey = key; sortDir = 'asc'; }
+                    renderTable();
+                });
+            });
+            document.getElementById('logout-button').addEventListener('click', async () => {
+                await supabaseClient.auth.signOut();
+                window.location.href = '/login.html';
+            });
+
+            fetchProjects();
+        })();
+    </script>
+</body>
+</html>

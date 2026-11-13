@@ -86,7 +86,8 @@
         </form>
     </div>
 
-    <script src="/config.js"></script>
+    <script src="roles.client.js"></script>
+    <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         console.log('login.html script started.');
@@ -112,6 +113,10 @@
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
         const errorMessage = document.getElementById('errorMessage');
+
+        // A page that refused this account (?error=...) explains itself here.
+        const loginMessage = new URLSearchParams(window.location.search).get('error');
+        if (loginMessage) errorMessage.textContent = loginMessage;
 
         if (loginForm) {
             loginForm.addEventListener('submit', async (e) => {
@@ -141,9 +146,26 @@
                         return;
                     }
 
-                    console.log('Login successful, redirecting...');
-                    // If login is successful, redirect to the main application page
-                    window.location.href = '/'; // Redirect to index.html
+                    console.log('Login successful, checking what this account may open...');
+                    // Which page this account belongs on: admin -> /, PIC -> /pic.html.
+                    // The API is the authority (it also knows the `admins` table);
+                    // rolesFromEmail() is the fallback when it cannot be reached.
+                    const accessToken = data && data.session ? data.session.access_token : '';
+                    const me = typeof fetchRole === 'function'
+                        ? await fetchRole(accessToken, (data.user && data.user.email) || email)
+                        : rolesFromEmail((data.user && data.user.email) || email);
+
+                    if (me.home && me.home !== '/login.html') {
+                        window.location.href = me.home;
+                        return;
+                    }
+
+                    // Signed in, but this account has no page (a viewer): drop the session
+                    // so it cannot bounce around, and say why on the form itself.
+                    await supabaseClient.auth.signOut();
+                    errorMessage.textContent = me.role === 'pic'
+                        ? `PIC ${me.picCode} has no page to open on this site. Please ask an admin.`
+                        : `This account (${(data.user && data.user.email) || email}) is not allowed on the project tracker.`;
                 } catch (err) {
                     console.error('Unexpected login error:', err);
                     errorMessage.textContent = `An unexpected error occurred: ${err.message}`;
